@@ -9,7 +9,7 @@ import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
 import { useContext } from "react";
 
-export default function Login() {
+export default function Register() {
   const { appTheme } = useContext(AppContext);
 
   return (
@@ -32,9 +32,11 @@ export default function Login() {
           style={[styles.row, { marginBottom: 40, justifyContent: "center" }]}
         >
           <AppText style={[styles.header, { color: mode[appTheme].theme1 }]}>
-            LOGIN
+            SIGN-UP
           </AppText>
         </View>
+        <AppTextInput iconName="account" placeholder="first name" />
+        <AppTextInput iconName="account" placeholder="last name" />
         <AppTextInput
           iconName="email"
           keyboardType="email-address"
@@ -44,6 +46,12 @@ export default function Login() {
           iconName="lock"
           secureTextEntry={true}
           placeholder="password"
+        />
+
+        <AppTextInput
+          iconName="lock"
+          secureTextEntry={true}
+          placeholder="confirm password"
         />
         <AppButton>Submit</AppButton>
       </View>

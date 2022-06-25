@@ -53,6 +53,7 @@ export default function AppTextInput({
         placeholder={placeholder}
         placeholderTextColor={mode[appTheme].text}
         onChangeText={onChangeText}
+        keyboardType={keyboardType}
         {...otherProps}
       />
     </View>

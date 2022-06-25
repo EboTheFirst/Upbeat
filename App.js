@@ -9,6 +9,7 @@ import AppContext from "./contexts/appContext";
 import * as SplashScreen from "expo-splash-screen";
 import Home from "./Screens/Home";
 import Login from "./Screens/Login";
+import Register from "./Screens/Register";
 
 const Stack = createStackNavigator();
 export default function App() {
@@ -60,6 +61,7 @@ export default function App() {
             headerShown: false,
           }}
         >
+          <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Login" component={Login} />
         </Stack.Navigator>
