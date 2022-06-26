@@ -25,6 +25,19 @@ export const styles = StyleSheet.create({
     fontFamily: "DMSans_400Regular",
     marginVertical: 10,
   },
+  search: {
+    paddingHorizontal: 10,
+    // borderWidth: 2,
+    // borderBottomWidth: 1,
+    borderRadius: 10,
+    marginVertical: 10,
+  },
+  searchInput: {
+    padding: 10,
+    fontSize: 18,
+    minWidth: 300,
+    fontFamily: "DMSans_400Regular",
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -39,7 +52,11 @@ export const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "DMSans_400Regular",
-    fontSize: 30,
+    fontSize: 18,
+  },
+  deviceListItemtext: {
+    fontFamily: "DMSans_400Regular",
+    fontSize: 14,
   },
   textMedium: {
     fontFamily: "DMSans_500Medium",

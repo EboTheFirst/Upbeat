@@ -9,8 +9,12 @@ import {
   DMSans_700Bold,
   DMSans_700Bold_Italic,
 } from "@expo-google-fonts/dm-sans";
+import { mode } from "../constants/colors";
+import { useContext } from "react";
+import AppContext from "../contexts/appContext";
 
 export default function AppText({ children, style, ...otherProps }) {
+  const { appTheme } = useContext(AppContext);
   let [fontsLoaded] = useFonts({
     DMSans_400Regular,
     DMSans_400Regular_Italic,
@@ -25,7 +29,10 @@ export default function AppText({ children, style, ...otherProps }) {
   }
 
   return (
-    <Text style={[styles.text, style]} {...otherProps}>
+    <Text
+      style={[styles.text, { color: mode[appTheme].text }, style]}
+      {...otherProps}
+    >
       {children}
     </Text>
   );
