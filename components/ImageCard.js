@@ -1,16 +1,20 @@
-import { ImageBackground, View } from "react-native";
+import { ImageBackground, TouchableOpacity, View } from "react-native";
 import { styles } from "../styles";
 import AppText from "../components/AppText";
 import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
 import { useContext } from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import { THEMES } from "../constants/themes";
 
-export default function ImageCard({ source, headerText }) {
+export default function ImageCard({ source, onPress, headerText }) {
   const { appTheme } = useContext(AppContext);
 
   return (
-    <View style={[styles.card, { padding: 1, marginTop: 20 }]}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.card, { padding: 1, marginTop: 20 }]}
+    >
       <ImageBackground
         source={source}
         resizeMode="cover"
@@ -23,18 +27,18 @@ export default function ImageCard({ source, headerText }) {
             "transparent",
             "transparent",
           ]}
-          style={[{ borderRadius: 10, height: 280, width: 320, padding: 15 }]}
+          style={[{ borderRadius: 10, height: 200, width: 320, padding: 15 }]}
         >
           <AppText
             style={[
               styles.textMedium,
-              { fontSize: 20, color: mode["dark"].text },
+              { fontSize: 20, color: mode[THEMES.DARK].text },
             ]}
           >
             {headerText}
           </AppText>
         </LinearGradient>
       </ImageBackground>
-    </View>
+    </TouchableOpacity>
   );
 }

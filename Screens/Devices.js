@@ -12,8 +12,9 @@ import DeviceListItem from "../components/DeviceListItem";
 import AppButton from "./../components/AppButton";
 import AppModal from "../components/AppModal";
 import AppTextInput from "../components/AppTextInput";
+import { routes } from "../constants/routes";
 
-export default function Devices() {
+export default function Devices({ navigation }) {
   const { appTheme } = useContext(AppContext);
   const [criteria, setCriteria] = useState("id");
   const [modalHidden, setModalHidden] = useState(true);
@@ -53,7 +54,12 @@ export default function Devices() {
         ]}
       >
         <Feather name="bell" size={25} color={mode[appTheme].theme1} />
-        <Feather name="settings" size={25} color={mode[appTheme].theme1} />
+        <Feather
+          name="settings"
+          onPress={() => navigation.navigate(routes.SETTINGS)}
+          size={25}
+          color={mode[appTheme].theme1}
+        />
       </View>
       {/* TOP BAR END */}
       <View style={{ flex: 1 }}>
@@ -106,11 +112,14 @@ export default function Devices() {
         >
           <FlatList
             data={devices}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
               console.log(item);
               return (
                 <DeviceListItem
+                  onPress={() => {
+                    navigation.navigate(routes.RESULTS);
+                  }}
                   deviceInfo={item}
                   // onPress={() =>
                   //   navigation.navigate(routes.MESSAGES, {

@@ -6,8 +6,9 @@ import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
 import { useContext } from "react";
 import ImageCard from "../components/ImageCard";
+import { routes } from "../constants/routes";
 
-export default function Home() {
+export default function Home({ navigation }) {
   const { appTheme } = useContext(AppContext);
 
   return (
@@ -22,11 +23,17 @@ export default function Home() {
             height: 80,
             justifyContent: "space-between",
             alignItems: "flex-end",
+            backgroundColor: mode[appTheme].backgroundDarker,
           },
         ]}
       >
         <Feather name="bell" size={25} color={mode[appTheme].theme1} />
-        <Feather name="settings" size={25} color={mode[appTheme].theme1} />
+        <Feather
+          name="settings"
+          onPress={() => navigation.navigate(routes.SETTINGS)}
+          size={25}
+          color={mode[appTheme].theme1}
+        />
       </View>
       {/* TOP BAR END */}
 
@@ -38,6 +45,7 @@ export default function Home() {
         }}
       >
         <ImageCard
+          onPress={() => navigation.navigate(routes.DEVICES)}
           source={require("../assets/devices-open.jpg")}
           headerText="DEVICES"
         />

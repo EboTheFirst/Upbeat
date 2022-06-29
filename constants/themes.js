@@ -1,6 +1,6 @@
 export const THEMES = {
-  LIGHT: "light",
-  DARK: "dark",
-  SEA: "sea",
-  PITCH_BLACK: "pitchblack",
+  LIGHT: "Light",
+  DARK: "Dark",
+  SEA: "Sea",
+  PITCH_BLACK: "Black",
 };

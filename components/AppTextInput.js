@@ -15,6 +15,7 @@ import {
 } from "@expo-google-fonts/dm-sans";
 
 export default function AppTextInput({
+  style,
   secureTextEntry,
   placeholder,
   keyboardType,
@@ -36,7 +37,7 @@ export default function AppTextInput({
     return null;
   }
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, style]}>
       {iconName && (
         <MaterialCommunityIcons
           name={iconName}

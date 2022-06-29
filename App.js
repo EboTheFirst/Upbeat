@@ -11,7 +11,10 @@ import Home from "./Screens/Home";
 import Login from "./Screens/Login";
 import Register from "./Screens/Register";
 import Devices from "./Screens/Devices";
-import { routes } from "./routes";
+import { routes } from "./constants/routes";
+import Results from "./Screens/Results";
+import ResultsDetails from "./Screens/ResultsDetails";
+import Settings from "./Screens/Settings";
 
 const Stack = createStackNavigator();
 export default function App() {
@@ -63,9 +66,15 @@ export default function App() {
             headerShown: false,
           }}
         >
-          <Stack.Screen name={routes.DEVICES} component={Devices} />
-          <Stack.Screen name={routes.REGISTER} component={Register} />
           <Stack.Screen name={routes.HOME} component={Home} />
+          <Stack.Screen name={routes.DEVICES} component={Devices} />
+          <Stack.Screen name={routes.RESULTS} component={Results} />
+          <Stack.Screen
+            name={routes.RESULTS_DETAILS}
+            component={ResultsDetails}
+          />
+          <Stack.Screen name={routes.SETTINGS} component={Settings} />
+          <Stack.Screen name={routes.REGISTER} component={Register} />
           <Stack.Screen name={routes.LOGIN} component={Login} />
         </Stack.Navigator>
       </NavigationContainer>

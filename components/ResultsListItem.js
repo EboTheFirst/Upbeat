@@ -4,9 +4,9 @@ import AppText from "../components/AppText";
 import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
 import { useContext } from "react";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Foundation } from "@expo/vector-icons";
 
-export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
+export default function ResultsListItem({ resultsInfo, onPress, key }) {
   const { appTheme } = useContext(AppContext);
 
   return (
@@ -20,8 +20,8 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
         ]}
       >
         {/* ICON */}
-        <MaterialCommunityIcons
-          name="devices"
+        <Foundation
+          name="results-demographics"
           size={35}
           color={mode[appTheme].text}
         />
@@ -29,15 +29,9 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
         {/* CONTENT */}
         <View style={{ flex: 1, paddingLeft: 40, paddingRight: 20 }}>
           <AppText style={[{ fontSize: 15, marginBottom: 5 }]}>
-            ID:{"  "}
-            <AppText style={{ fontFamily: "DMSans_500Medium" }}>
-              {deviceInfo.id}
-            </AppText>
-          </AppText>
-          <AppText style={[{ fontSize: 15, marginBottom: 5 }]}>
-            Alias:{"  "}
-            <AppText style={{ fontFamily: "DMSans_500Medium", fontSize: 16 }}>
-              {deviceInfo.alias || "--"}
+            Label:{"  "}
+            <AppText style={{ fontFamily: "DMSans_500Medium", fontSize: 15 }}>
+              {resultsInfo.label}
             </AppText>
           </AppText>
         </View>
@@ -45,7 +39,7 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
         {/* DATE */}
         <View style={{ justifyContent: "space-evenly" }}>
           <AppText style={[styles.deviceListItemtext, { marginBottom: 5 }]}>
-            Last used
+            Received
           </AppText>
           <AppText
             style={[
