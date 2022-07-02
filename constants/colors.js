@@ -5,6 +5,7 @@ export const mode = {
     theme1: "#2085AD",
     theme2: "#25BDD6",
     text: "#0C203C",
+    danger: "#A60101",
   },
   Dark: {
     background: "#0B1D36",
@@ -12,6 +13,7 @@ export const mode = {
     theme1: "#2085AD",
     theme2: "#25BDD6",
     text: "#DEE5F3",
+    danger: "#A60101",
   },
   Sea: {
     background: "#161C60",
@@ -19,6 +21,7 @@ export const mode = {
     theme1: "#2085AD",
     theme2: "#25BDD6",
     text: "#DEE5F3",
+    danger: "#A60101",
   },
   Black: {
     background: "#000",
@@ -26,5 +29,6 @@ export const mode = {
     theme1: "#2085AD",
     theme2: "#25BDD6",
     text: "#DEE5F3",
+    danger: "#A60101",
   },
 };

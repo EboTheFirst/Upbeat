@@ -16,6 +16,7 @@ import {
 
 export default function AppTextInput({
   style,
+  inputStyle,
   secureTextEntry,
   placeholder,
   keyboardType,
@@ -49,6 +50,7 @@ export default function AppTextInput({
         style={[
           styles.field,
           { color: mode[appTheme].text, borderColor: mode[appTheme].theme1 },
+          inputStyle,
         ]}
         secureTextEntry={secureTextEntry}
         placeholder={placeholder}

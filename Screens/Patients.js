@@ -8,26 +8,25 @@ import { useContext, useState } from "react";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import SearchBar from "../components/SearchBar";
 import AppText from "../components/AppText";
-import DeviceListItem from "../components/DeviceListItem";
 import AppButton from "./../components/AppButton";
 import AppModal from "../components/AppModal";
 import AppTextInput from "../components/AppTextInput";
 import { routes } from "../constants/routes";
+import PatientListItem from "../components/PatientListItem";
 
-export default function Devices({ navigation }) {
+export default function Patients({ navigation }) {
   const { appTheme } = useContext(AppContext);
-  const [criteria, setCriteria] = useState("id");
   const [modalHidden, setModalHidden] = useState(true);
-  const [devices, setDevices] = useState([
+  const [patients, setPatients] = useState([
     {
-      id: "01XAD-12425",
-      last_used: "25th June, 2022. 17:43 GMT",
-      alias: "Ward-15",
+      id: "nndj",
+      name: "Ms. Pista Longrose",
+      last_modified: "25th June, 2022. 17:43 GMT",
     },
     {
-      id: "01XAD-72304",
-      last_used: "25th June, 2022. 9:43 GMT",
-      alias: "Ward-72",
+      id: "siddus",
+      name: "Mr. Richie Lincoln",
+      last_modified: "25th June, 2022. 9:43 GMT",
     },
   ]);
 
@@ -64,45 +63,9 @@ export default function Devices({ navigation }) {
       {/* TOP BAR END */}
       <View style={{ flex: 1 }}>
         <View style={[styles.row, { justifyContent: "center" }]}>
-          <SearchBar placeholder="Search for device" />
+          <SearchBar placeholder="Search for a patient" />
         </View>
-        <View style={[styles.row, { justifyContent: "space-around" }]}>
-          <AppText style={{ color: mode[appTheme].text, marginRight: 15 }}>
-            Criteria :
-          </AppText>
-          <RadioButtonGroup
-            containerStyle={{
-              flexDirection: "row",
-              marginVertical: 5,
-            }}
-            selected={criteria}
-            onSelected={(value) => setCriteria(value)}
-            radioBackground={mode[appTheme].theme2}
-          >
-            <RadioButtonItem
-              value="id"
-              label={
-                <AppText
-                  style={{
-                    fontSize: 18,
-                    color: mode[appTheme].text,
-                    marginRight: 15,
-                  }}
-                >
-                  id
-                </AppText>
-              }
-            />
-            <RadioButtonItem
-              value="alias"
-              label={
-                <AppText style={{ fontSize: 18, color: mode[appTheme].text }}>
-                  alias
-                </AppText>
-              }
-            />
-          </RadioButtonGroup>
-        </View>
+
         <View
           style={{
             marginTop: 10,
@@ -111,16 +74,14 @@ export default function Devices({ navigation }) {
           }}
         >
           <FlatList
-            data={devices}
+            data={patients}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
+              console.log(item);
               return (
-                <DeviceListItem
+                <PatientListItem
                   onPress={() => {
-                    navigation.navigate(routes.RECORDINGS_DEVICE, {
-                      value: item.id,
-                      filter: "device",
-                    });
+                    navigation.navigate(routes.PATIENT_INFO);
                   }}
                   deviceInfo={item}
                   // onPress={() =>
@@ -143,7 +104,7 @@ export default function Devices({ navigation }) {
             }}
             style={{ marginTop: 35 }}
           >
-            Add a new device
+            Add Patient
           </AppButton>
         </View>
       </View>
@@ -159,8 +120,35 @@ export default function Devices({ navigation }) {
             color={mode[appTheme].text}
           />
         </View>
-        <AppTextInput placeholder={"Enter device ID"} />
-        <AppTextInput placeholder={"Enter an alias"} />
+        <AppTextInput
+          inputStyle={{ width: 280 }}
+          iconName={"account-outline"}
+          placeholder={"Patient's full name"}
+        />
+        <View style={[styles.row]}>
+          <AppTextInput
+            inputStyle={{ minWidth: 80 }}
+            iconName={"clock-outline"}
+            keyboardType={"numeric"}
+            placeholder={"Age"}
+          />
+          <AppTextInput
+            style={{ marginLeft: 25 }}
+            inputStyle={{ minWidth: 150 }}
+            iconName={"gender-male-female"}
+            placeholder={"Gender"}
+          />
+        </View>
+        <AppTextInput
+          iconName={"contacts-outline"}
+          keyboardType={"numeric"}
+          placeholder={"Contact"}
+        />
+        <AppTextInput
+          iconName={"home-outline"}
+          inputStyle={{ width: 280 }}
+          placeholder={"Residence"}
+        />
         <AppButton>Add</AppButton>
       </AppModal>
       <StatusBar style="auto" />

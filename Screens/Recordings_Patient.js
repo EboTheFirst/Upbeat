@@ -8,26 +8,24 @@ import { useContext, useState } from "react";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import SearchBar from "../components/SearchBar";
 import AppText from "../components/AppText";
-import DeviceListItem from "../components/DeviceListItem";
-import AppButton from "./../components/AppButton";
-import AppModal from "../components/AppModal";
-import AppTextInput from "../components/AppTextInput";
+import RecordingListItem from "../components/RecordingListItem";
 import { routes } from "../constants/routes";
 
-export default function Devices({ navigation }) {
+export default function Recordings_Patient({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
-  const [criteria, setCriteria] = useState("id");
-  const [modalHidden, setModalHidden] = useState(true);
-  const [devices, setDevices] = useState([
+  const [criteria, setCriteria] = useState("name");
+  const [recordings, setReults] = useState([
     {
       id: "01XAD-12425",
       last_used: "25th June, 2022. 17:43 GMT",
       alias: "Ward-15",
+      label: "Kofi mitral",
     },
     {
       id: "01XAD-72304",
       last_used: "25th June, 2022. 9:43 GMT",
       alias: "Ward-72",
+      label: "Ama, aortic",
     },
   ]);
 
@@ -39,36 +37,36 @@ export default function Devices({ navigation }) {
         backgroundColor: mode[appTheme].background,
       }}
     >
-      {/* TOP BAR START */}
       <View
         style={[
           styles.card,
           styles.row,
           {
-            backgroundColor: mode[appTheme].backgroundDarker,
             borderRadius: 0,
             height: 80,
             justifyContent: "space-between",
             alignItems: "flex-end",
+            backgroundColor: mode[appTheme].backgroundDarker,
           },
         ]}
       >
-        <Feather name="bell" size={25} color={mode[appTheme].theme1} />
         <Feather
-          name="settings"
-          onPress={() => navigation.navigate(routes.SETTINGS)}
+          name="arrow-left"
           size={25}
+          onPress={() => {
+            navigation.pop();
+          }}
           color={mode[appTheme].theme1}
         />
+        <AppText style={{ fontFamily: "DMSans_700Bold" }}>RECORDINGS</AppText>
       </View>
-      {/* TOP BAR END */}
       <View style={{ flex: 1 }}>
         <View style={[styles.row, { justifyContent: "center" }]}>
-          <SearchBar placeholder="Search for device" />
+          <SearchBar placeholder="Search by device" />
         </View>
         <View style={[styles.row, { justifyContent: "space-around" }]}>
           <AppText style={{ color: mode[appTheme].text, marginRight: 15 }}>
-            Criteria :
+            Filter
           </AppText>
           <RadioButtonGroup
             containerStyle={{
@@ -80,7 +78,7 @@ export default function Devices({ navigation }) {
             radioBackground={mode[appTheme].theme2}
           >
             <RadioButtonItem
-              value="id"
+              value="name"
               label={
                 <AppText
                   style={{
@@ -89,19 +87,29 @@ export default function Devices({ navigation }) {
                     marginRight: 15,
                   }}
                 >
-                  id
+                  ID
                 </AppText>
               }
             />
             <RadioButtonItem
-              value="alias"
+              value="label"
               label={
                 <AppText style={{ fontSize: 18, color: mode[appTheme].text }}>
-                  alias
+                  Alias
                 </AppText>
               }
             />
           </RadioButtonGroup>
+        </View>
+        <View
+          style={[
+            styles.row,
+            { justifyContent: "space-around", marginTop: 20 },
+          ]}
+        >
+          <AppText style={[{ fontSize: 14 }]}>
+            Showing recordings from {route.params.filter} {route.params.value}
+          </AppText>
         </View>
         <View
           style={{
@@ -111,18 +119,16 @@ export default function Devices({ navigation }) {
           }}
         >
           <FlatList
-            data={devices}
+            data={recordings}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
+              console.log(item);
               return (
-                <DeviceListItem
+                <RecordingListItem
+                  recordingsInfo={item}
                   onPress={() => {
-                    navigation.navigate(routes.RECORDINGS_DEVICE, {
-                      value: item.id,
-                      filter: "device",
-                    });
+                    navigation.navigate(routes.RESULTS_DETAILS);
                   }}
-                  deviceInfo={item}
                   // onPress={() =>
                   //   navigation.navigate(routes.MESSAGES, {
                   //     chatID: item._id,
@@ -136,33 +142,7 @@ export default function Devices({ navigation }) {
             // onRefresh={retrieveChats}
           />
         </View>
-        <View style={{ alignSelf: "center" }}>
-          <AppButton
-            onPress={() => {
-              setModalHidden(false);
-            }}
-            style={{ marginTop: 35 }}
-          >
-            Add a new device
-          </AppButton>
-        </View>
       </View>
-      <AppModal hidden={modalHidden}>
-        <View style={[styles.row, { justifyContent: "flex-end" }]}>
-          <FontAwesome
-            onPress={() => {
-              console.log("Pressed");
-              setModalHidden(true);
-            }}
-            name="close"
-            size={20}
-            color={mode[appTheme].text}
-          />
-        </View>
-        <AppTextInput placeholder={"Enter device ID"} />
-        <AppTextInput placeholder={"Enter an alias"} />
-        <AppButton>Add</AppButton>
-      </AppModal>
       <StatusBar style="auto" />
     </View>
   );

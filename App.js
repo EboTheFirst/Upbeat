@@ -12,9 +12,13 @@ import Login from "./Screens/Login";
 import Register from "./Screens/Register";
 import Devices from "./Screens/Devices";
 import { routes } from "./constants/routes";
-import Results from "./Screens/Results";
+import Recordings from "./Screens/Recordings";
 import ResultsDetails from "./Screens/ResultsDetails";
 import Settings from "./Screens/Settings";
+import Patients from "./Screens/Patients";
+import PatientInfo from "./Screens/PatientInfo";
+import Recordings_Patient from "./Screens/Recordings_Patient";
+import Recordings_Device from "./Screens/Recordings_Device";
 
 const Stack = createStackNavigator();
 export default function App() {
@@ -67,8 +71,18 @@ export default function App() {
           }}
         >
           <Stack.Screen name={routes.HOME} component={Home} />
+          <Stack.Screen name={routes.PATIENTS} component={Patients} />
+          <Stack.Screen name={routes.PATIENT_INFO} component={PatientInfo} />
           <Stack.Screen name={routes.DEVICES} component={Devices} />
-          <Stack.Screen name={routes.RESULTS} component={Results} />
+          <Stack.Screen name={routes.RECORDINGS} component={Recordings} />
+          <Stack.Screen
+            name={routes.RECORDINGS_PATIENT}
+            component={Recordings_Patient}
+          />
+          <Stack.Screen
+            name={routes.RECORDINGS_DEVICE}
+            component={Recordings_Device}
+          />
           <Stack.Screen
             name={routes.RESULTS_DETAILS}
             component={ResultsDetails}

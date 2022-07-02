@@ -22,7 +22,11 @@ export default function AppModal({ children, style, hidden }) {
       ]}
     >
       <View
-        style={[styles.card, { backgroundColor: mode[appTheme].background }]}
+        style={[
+          styles.card,
+          { backgroundColor: mode[appTheme].background },
+          style,
+        ]}
       >
         {children}
       </View>

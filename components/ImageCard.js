@@ -13,7 +13,7 @@ export default function ImageCard({ source, onPress, headerText }) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={[styles.card, { padding: 1, marginTop: 20 }]}
+      style={[styles.card, { padding: 1, marginTop: 5 }]}
     >
       <ImageBackground
         source={source}
@@ -27,7 +27,7 @@ export default function ImageCard({ source, onPress, headerText }) {
             "transparent",
             "transparent",
           ]}
-          style={[{ borderRadius: 10, height: 200, width: 320, padding: 15 }]}
+          style={[{ borderRadius: 10, height: 180, width: 320, padding: 15 }]}
         >
           <AppText
             style={[

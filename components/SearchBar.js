@@ -17,6 +17,8 @@ import {
 export default function SearchBar({
   placeholder,
   onChangeText,
+  searchInputStyle,
+  style,
   ...otherProps
 }) {
   const { appTheme } = useContext(AppContext);
@@ -39,11 +41,16 @@ export default function SearchBar({
         styles.search,
         styles.row,
         { padding: 0, paddingLeft: 20 },
+        style,
       ]}
     >
       <FontAwesome name="search" size={20} color={mode[appTheme].theme1} />
       <TextInput
-        style={[styles.searchInput, { color: mode[appTheme].text }]}
+        style={[
+          styles.searchInput,
+          { color: mode[appTheme].text },
+          searchInputStyle,
+        ]}
         placeholder={placeholder}
         placeholderTextColor={mode[appTheme].text}
         onChangeText={onChangeText}

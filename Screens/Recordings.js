@@ -8,17 +8,13 @@ import { useContext, useState } from "react";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import SearchBar from "../components/SearchBar";
 import AppText from "../components/AppText";
-import DeviceListItem from "../components/DeviceListItem";
-import AppButton from "./../components/AppButton";
-import AppModal from "../components/AppModal";
-import AppTextInput from "../components/AppTextInput";
-import ResultsListItem from "../components/ResultsListItem";
+import RecordingListItem from "../components/RecordingListItem";
 import { routes } from "../constants/routes";
 
-export default function Results({ navigation, route }) {
+export default function Recordings({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
-  const [criteria, setCriteria] = useState("newest");
-  const [results, setReults] = useState([
+  const [criteria, setCriteria] = useState("name");
+  const [recordings, setReults] = useState([
     {
       id: "01XAD-12425",
       last_used: "25th June, 2022. 17:43 GMT",
@@ -62,15 +58,15 @@ export default function Results({ navigation, route }) {
           }}
           color={mode[appTheme].theme1}
         />
-        <AppText style={{ fontFamily: "DMSans_700Bold" }}>RESULTS</AppText>
+        <AppText style={{ fontFamily: "DMSans_700Bold" }}>RECORDINGS</AppText>
       </View>
       <View style={{ flex: 1 }}>
         <View style={[styles.row, { justifyContent: "center" }]}>
-          <SearchBar placeholder="Search results by label" />
+          <SearchBar placeholder="Search by patient's name" />
         </View>
         <View style={[styles.row, { justifyContent: "space-around" }]}>
           <AppText style={{ color: mode[appTheme].text, marginRight: 15 }}>
-            Sort By :
+            Search By
           </AppText>
           <RadioButtonGroup
             containerStyle={{
@@ -82,7 +78,7 @@ export default function Results({ navigation, route }) {
             radioBackground={mode[appTheme].theme2}
           >
             <RadioButtonItem
-              value="newest"
+              value="name"
               label={
                 <AppText
                   style={{
@@ -91,25 +87,21 @@ export default function Results({ navigation, route }) {
                     marginRight: 15,
                   }}
                 >
-                  newest
+                  Name
                 </AppText>
               }
             />
             <RadioButtonItem
-              value="oldest"
+              value="label"
               label={
-                <AppText
-                  style={{
-                    fontSize: 18,
-                    color: mode[appTheme].text,
-                  }}
-                >
-                  oldest
+                <AppText style={{ fontSize: 18, color: mode[appTheme].text }}>
+                  Label
                 </AppText>
               }
             />
           </RadioButtonGroup>
         </View>
+
         <View
           style={{
             marginTop: 10,
@@ -118,13 +110,13 @@ export default function Results({ navigation, route }) {
           }}
         >
           <FlatList
-            data={results}
+            data={recordings}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => {
               console.log(item);
               return (
-                <ResultsListItem
-                  resultsInfo={item}
+                <RecordingListItem
+                  recordingsInfo={item}
                   onPress={() => {
                     navigation.navigate(routes.RESULTS_DETAILS);
                   }}
