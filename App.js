@@ -19,11 +19,20 @@ import Patients from "./Screens/Patients";
 import PatientInfo from "./Screens/PatientInfo";
 import Recordings_Patient from "./Screens/Recordings_Patient";
 import Recordings_Device from "./Screens/Recordings_Device";
+import jwtDecode from "jwt-decode";
+import userStorage from "./appstorage/user";
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs([
+  "ViewPropTypes will be removed",
+  "ColorPropType will be removed",
+]);
 
 const Stack = createStackNavigator();
 export default function App() {
   const [appTheme, setAppTheme] = useState();
   const [appIsReady, setAppIsReady] = useState(false);
+  const [user, setUser] = useState();
 
   useEffect(() => {
     async function prepare() {
@@ -32,6 +41,7 @@ export default function App() {
         await SplashScreen.preventAutoHideAsync();
         // Pre-load fonts, make any API calls you need to do here
         await loadTheme();
+        await loadUser();
         // Artificially delay for two seconds to simulate a slow loading
         // experience. Please remove this if you copy and paste the code!
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -46,6 +56,13 @@ export default function App() {
 
     prepare();
   }, []);
+
+  const loadUser = async () => {
+    const userToken = await userStorage.getUser();
+    if (userToken) {
+      setUser(jwtDecode(userToken));
+    }
+  };
 
   const loadTheme = async () => {
     let theme = THEMES.LIGHT;
@@ -63,13 +80,16 @@ export default function App() {
   }
 
   return (
-    <AppContext.Provider value={{ appTheme, setAppTheme }}>
+    <AppContext.Provider value={{ appTheme, setAppTheme, user, setUser }}>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
           }}
+          initialRouteName={user ? routes.HOME : routes.REGISTER}
         >
+          <Stack.Screen name={routes.REGISTER} component={Register} />
+          <Stack.Screen name={routes.LOGIN} component={Login} />
           <Stack.Screen name={routes.HOME} component={Home} />
           <Stack.Screen name={routes.PATIENTS} component={Patients} />
           <Stack.Screen name={routes.PATIENT_INFO} component={PatientInfo} />
@@ -88,8 +108,6 @@ export default function App() {
             component={ResultsDetails}
           />
           <Stack.Screen name={routes.SETTINGS} component={Settings} />
-          <Stack.Screen name={routes.REGISTER} component={Register} />
-          <Stack.Screen name={routes.LOGIN} component={Login} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppContext.Provider>
