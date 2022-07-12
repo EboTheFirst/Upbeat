@@ -42,32 +42,14 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
               ID{"\n"}
               <AppText style={{ fontSize: 15 }}>{deviceInfo.id}</AppText>
             </AppText>
-            <AppText
-              style={[
-                {
-                  fontSize: 12,
-                  fontFamily: "DMSans_500Medium",
-                  marginBottom: 5,
-                  marginTop: 2,
-                },
-              ]}
-            >
-              ALIAS{"\n"}
-              <AppText
-                style={{
-                  fontSize: 15,
-                }}
-              >
-                {deviceInfo.alias || "--"}
-              </AppText>
-            </AppText>
+
             <View
               style={[
                 styles.row,
                 { justifyContent: "flex-start", marginTop: 10 },
               ]}
             >
-              <AppText style={{ fontSize: 12, marginLeft: 10 }}>
+              <AppText style={{ fontSize: 12 }}>
                 {"unassigned recordings:  "}
               </AppText>
               <View

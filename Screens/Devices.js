@@ -18,16 +18,15 @@ export default function Devices({ navigation }) {
   const { appTheme } = useContext(AppContext);
   const [criteria, setCriteria] = useState("id");
   const [modalHidden, setModalHidden] = useState(true);
+  const [filteredDevices, setFilteredDevices] = useState();
   const [devices, setDevices] = useState([
     {
       id: "01XAD-12425",
       last_used: "25th June, 2022. 17:43 GMT",
-      alias: "Ward-15",
     },
     {
       id: "01XAD-72304",
       last_used: "25th June, 2022. 9:43 GMT",
-      alias: "Ward-72",
     },
   ]);
 

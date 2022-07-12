@@ -29,7 +29,7 @@ export default function PatientListItem({ patientInfo, onPress, alias, key }) {
             ]}
           >
             NAME{"\n"}
-            <AppText style={{ fontSize: 15 }}>{"Mr. Richard Quinn"}</AppText>
+            <AppText style={{ fontSize: 15 }}>{patientInfo.fullname}</AppText>
           </AppText>
           <AppText
             style={[

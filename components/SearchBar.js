@@ -18,6 +18,7 @@ export default function SearchBar({
   placeholder,
   onChangeText,
   searchInputStyle,
+  value,
   style,
   ...otherProps
 }) {
@@ -54,6 +55,7 @@ export default function SearchBar({
         placeholder={placeholder}
         placeholderTextColor={mode[appTheme].text}
         onChangeText={onChangeText}
+        value={value}
         {...otherProps}
       />
     </View>

@@ -22,7 +22,7 @@ export default function Login({ navigation }) {
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().email().required().label("Email"),
-    password: Yup.string().required().min(6).label("Password"),
+    password: Yup.string().required().label("Password"),
   });
 
   const submitHandler = async (formData) => {
@@ -41,6 +41,8 @@ export default function Login({ navigation }) {
       });
     } else if (status == 401) {
       alert("Invalid credentials");
+    } else {
+      alert(status);
     }
     setLoading(false);
   };

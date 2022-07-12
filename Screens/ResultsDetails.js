@@ -121,7 +121,6 @@ export default function ResultsDetails({ navigation }) {
             </View>
             <AppText>Prediction:</AppText>
             <AppText>Certainty:</AppText>
-            <AppText>Auscultation Location:</AppText>
             <AppText>Date Received:</AppText>
           </View>
         </View>

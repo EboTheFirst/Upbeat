@@ -4,31 +4,80 @@ import { styles } from "../styles";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import SearchBar from "../components/SearchBar";
 import AppText from "../components/AppText";
 import AppButton from "./../components/AppButton";
 import AppModal from "../components/AppModal";
-import AppTextInput from "../components/AppTextInput";
+import FormTextInput from "../components/FormTextInput";
 import { routes } from "../constants/routes";
+import * as Yup from "yup";
 import PatientListItem from "../components/PatientListItem";
+import { create, get, update } from "../api/patients.api";
+import Loading from "../components/Loading";
+import Submit from "../components/Submit";
+import { Formik } from "formik";
 
 export default function Patients({ navigation }) {
   const { appTheme } = useContext(AppContext);
   const [modalHidden, setModalHidden] = useState(true);
-  const [patients, setPatients] = useState([
-    {
-      id: "nndj",
-      name: "Ms. Pista Longrose",
-      last_modified: "25th June, 2022. 17:43 GMT",
-    },
-    {
-      id: "siddus",
-      name: "Mr. Richie Lincoln",
-      last_modified: "25th June, 2022. 9:43 GMT",
-    },
-  ]);
+  const [patients, setPatients] = useState();
+  const [filteredPatients, setFilteredPatients] = useState();
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadPatients = async () => {
+    const { status, data } = await get();
+    if (status == 200) {
+      setPatients(data);
+      setFilteredPatients(data);
+    } else {
+      alert("Error getting patients");
+    }
+  };
+
+  useEffect(() => {
+    loadPatients().catch(console.error);
+  }, []);
+
+  const validationSchema = Yup.object().shape({
+    fullname: Yup.string().required().label("Full name"),
+    age: Yup.number().min(0).required().label("Age"),
+    gender: Yup.string().required().label("Gender"),
+    contact: Yup.number().required().label("Contact"),
+    residence: Yup.string().required().label("Residence"),
+  });
+
+  const submitHandler = async (formData) => {
+    setLoading(true);
+    for (const key in formData) {
+      formData[key] = formData[key].trim();
+    }
+    const { status, data } = await create(formData);
+    if (status == 200) {
+      alert("Patient added");
+      const newPatients = [...patients, data];
+      setPatients(newPatients);
+      setFilteredPatients(newPatients);
+      setModalHidden(true);
+    } else if (status == 401) {
+      alert("Error adding patient");
+    }
+    setLoading(false);
+  };
+
+  const searchHandler = (text) => {
+    const filt = patients.filter((patient) => {
+      return patient.fullname.toLowerCase().search(text.toLowerCase()) != -1;
+    });
+
+    setFilteredPatients(filt);
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <View
@@ -63,7 +112,11 @@ export default function Patients({ navigation }) {
       {/* TOP BAR END */}
       <View style={{ flex: 1 }}>
         <View style={[styles.row, { justifyContent: "center" }]}>
-          <SearchBar placeholder="Search for a patient" />
+          <SearchBar
+            // value={searchText}
+            onChangeText={searchHandler}
+            placeholder="Search for a patient"
+          />
         </View>
 
         <View
@@ -74,27 +127,20 @@ export default function Patients({ navigation }) {
           }}
         >
           <FlatList
-            data={patients}
-            keyExtractor={(item) => item.id}
+            data={filteredPatients}
+            keyExtractor={(item) => item._id}
             renderItem={({ item }) => {
-              console.log(item);
               return (
                 <PatientListItem
                   onPress={() => {
-                    navigation.navigate(routes.PATIENT_INFO);
+                    navigation.navigate(routes.PATIENT_INFO, { data: item });
                   }}
-                  deviceInfo={item}
-                  // onPress={() =>
-                  //   navigation.navigate(routes.MESSAGES, {
-                  //     chatID: item._id,
-                  //     tutor: item.tutor,
-                  //   })
-                  // }
+                  patientInfo={item}
                 />
               );
             }}
-            // refreshing={refreshing}
-            // onRefresh={retrieveChats}
+            refreshing={refreshing}
+            onRefresh={loadPatients}
           />
         </View>
         <View style={{ alignSelf: "center" }}>
@@ -112,7 +158,6 @@ export default function Patients({ navigation }) {
         <View style={[styles.row, { justifyContent: "flex-end" }]}>
           <FontAwesome
             onPress={() => {
-              console.log("Pressed");
               setModalHidden(true);
             }}
             name="close"
@@ -120,36 +165,55 @@ export default function Patients({ navigation }) {
             color={mode[appTheme].text}
           />
         </View>
-        <AppTextInput
-          inputStyle={{ width: 280 }}
-          iconName={"account-outline"}
-          placeholder={"Patient's full name"}
-        />
-        <View style={[styles.row]}>
-          <AppTextInput
-            inputStyle={{ minWidth: 80 }}
-            iconName={"clock-outline"}
-            keyboardType={"numeric"}
-            placeholder={"Age"}
-          />
-          <AppTextInput
-            style={{ marginLeft: 25 }}
-            inputStyle={{ minWidth: 150 }}
-            iconName={"gender-male-female"}
-            placeholder={"Gender"}
-          />
-        </View>
-        <AppTextInput
-          iconName={"contacts-outline"}
-          keyboardType={"numeric"}
-          placeholder={"Contact"}
-        />
-        <AppTextInput
-          iconName={"home-outline"}
-          inputStyle={{ width: 280 }}
-          placeholder={"Residence"}
-        />
-        <AppButton>Add</AppButton>
+        <Formik
+          initialValues={{
+            fullname: "",
+            age: "",
+            gender: "",
+            contact: "",
+            residence: "",
+          }}
+          validationSchema={validationSchema}
+          onSubmit={submitHandler}
+        >
+          <>
+            <FormTextInput
+              inputStyle={{ width: 280 }}
+              iconName={"account-outline"}
+              placeholder={"Patient's full name"}
+              name="fullname"
+            />
+            <View style={[styles.row]}>
+              <FormTextInput
+                inputStyle={{ minWidth: 80 }}
+                iconName={"clock-outline"}
+                keyboardType={"numeric"}
+                placeholder={"Age"}
+                name="age"
+              />
+              <FormTextInput
+                style={{ marginLeft: 25 }}
+                inputStyle={{ minWidth: 150 }}
+                iconName={"gender-male-female"}
+                placeholder={"Gender"}
+                name="gender"
+              />
+            </View>
+            <FormTextInput
+              iconName={"contacts-outline"}
+              keyboardType={"numeric"}
+              placeholder={"Contact"}
+              name="contact"
+            />
+            <FormTextInput
+              iconName={"home-outline"}
+              inputStyle={{ width: 280 }}
+              placeholder={"Residence"}
+              name="residence"
+            />
+            <Submit>Add</Submit>
+          </>
+        </Formik>
       </AppModal>
       <StatusBar style="auto" />
     </View>

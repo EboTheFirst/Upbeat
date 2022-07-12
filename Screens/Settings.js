@@ -9,9 +9,10 @@ import AppText from "../components/AppText";
 import AppTextInput from "../components/AppTextInput";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import { THEMES } from "../constants/themes";
-import { useState } from "react/cjs/react.development";
+import userStorage from "../appstorage/user";
 import AppButton from "./../components/AppButton";
 import { save } from "../appstorage/store";
+import { routes } from "../constants/routes";
 
 export default function Settings({ navigation }) {
   const { appTheme, setAppTheme } = useContext(AppContext);
@@ -142,6 +143,17 @@ export default function Settings({ navigation }) {
             {"NOTIFICATIONS"}
           </AppText>
         </View>
+        <AppButton
+          onPress={() => {
+            userStorage.removeUser();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: routes.LOGIN }],
+            });
+          }}
+        >
+          Sign out
+        </AppButton>
       </View>
       <StatusBar style="auto" />
     </View>
