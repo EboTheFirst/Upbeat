@@ -32,7 +32,7 @@ export default function RecordingListItem({ recordingsInfo, onPress, key }) {
 
         {/* CONTENT */}
         <View style={{ flex: 1, paddingLeft: 40, paddingRight: 20 }}>
-          {recordingsInfo.patientId ? (
+          {recordingsInfo.patient ? (
             <AppText
               style={[
                 {
@@ -43,7 +43,9 @@ export default function RecordingListItem({ recordingsInfo, onPress, key }) {
               ]}
             >
               LABEL{" \n"}
-              <AppText style={{ fontSize: 15 }}>{recordingsInfo.label}</AppText>
+              <AppText style={{ fontSize: 15 }}>
+                {recordingsInfo.label || "No Label"}
+              </AppText>
             </AppText>
           ) : (
             <AppText

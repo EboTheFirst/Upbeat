@@ -64,6 +64,10 @@ export default function App() {
     }
   };
 
+  const setUserIndirectly = (token) => {
+    setUser(jwtDecode(token));
+  };
+
   const loadTheme = async () => {
     let theme = THEMES.LIGHT;
     let saved_theme = await load("THEME");

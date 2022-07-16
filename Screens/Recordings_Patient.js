@@ -14,20 +14,7 @@ import { routes } from "../constants/routes";
 export default function Recordings_Patient({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
   const [criteria, setCriteria] = useState("name");
-  const [recordings, setReults] = useState([
-    {
-      id: "01XAD-12425",
-      last_used: "25th June, 2022. 17:43 GMT",
-      alias: "Ward-15",
-      label: "Kofi mitral",
-    },
-    {
-      id: "01XAD-72304",
-      last_used: "25th June, 2022. 9:43 GMT",
-      alias: "Ward-72",
-      label: "Ama, aortic",
-    },
-  ]);
+  const [recordings, setReults] = useState(route.params.recordings);
 
   return (
     <View
@@ -120,7 +107,7 @@ export default function Recordings_Patient({ navigation, route }) {
         >
           <FlatList
             data={recordings}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item._id}
             renderItem={({ item }) => {
               console.log(item);
               return (
@@ -129,17 +116,9 @@ export default function Recordings_Patient({ navigation, route }) {
                   onPress={() => {
                     navigation.navigate(routes.RESULTS_DETAILS);
                   }}
-                  // onPress={() =>
-                  //   navigation.navigate(routes.MESSAGES, {
-                  //     chatID: item._id,
-                  //     tutor: item.tutor,
-                  //   })
-                  // }
                 />
               );
             }}
-            // refreshing={refreshing}
-            // onRefresh={retrieveChats}
           />
         </View>
       </View>

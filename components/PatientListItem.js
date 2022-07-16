@@ -31,13 +31,6 @@ export default function PatientListItem({ patientInfo, onPress, alias, key }) {
             NAME{"\n"}
             <AppText style={{ fontSize: 15 }}>{patientInfo.fullname}</AppText>
           </AppText>
-          <AppText
-            style={[
-              { fontSize: 12, fontFamily: "DMSans_500Medium", marginBottom: 5 },
-            ]}
-          >
-            RECORDINGS: 3
-          </AppText>
         </View>
 
         {/* DATE */}

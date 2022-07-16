@@ -40,7 +40,9 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
               ]}
             >
               ID{"\n"}
-              <AppText style={{ fontSize: 15 }}>{deviceInfo.id}</AppText>
+              <AppText style={{ fontSize: 15 }}>
+                {deviceInfo.device.deviceId}
+              </AppText>
             </AppText>
 
             <View
@@ -49,24 +51,34 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
                 { justifyContent: "flex-start", marginTop: 10 },
               ]}
             >
-              <AppText style={{ fontSize: 12 }}>
-                {"unassigned recordings:  "}
-              </AppText>
-              <View
-                style={{
-                  borderRadius: 20,
-                  width: 25,
-                  backgroundColor: mode[appTheme].danger,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <AppText
-                  style={{ fontSize: 12, color: mode[THEMES.DARK].text }}
-                >
-                  3
-                </AppText>
-              </View>
+              {deviceInfo.unassigned ? (
+                <>
+                  <AppText style={{ fontSize: 12 }}>
+                    {"unassigned recordings:  "}
+                  </AppText>
+                  <View
+                    style={{
+                      borderRadius: 20,
+                      width: 25,
+                      backgroundColor: mode[appTheme].danger,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <AppText
+                      style={{
+                        fontSize: 12,
+                        color: mode[THEMES.DARK].text,
+                        fontFamily: "DMSans_700Bold",
+                      }}
+                    >
+                      {deviceInfo.unassigned}
+                    </AppText>
+                  </View>
+                </>
+              ) : (
+                <></>
+              )}
             </View>
           </View>
 

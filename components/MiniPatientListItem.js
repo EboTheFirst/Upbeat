@@ -24,7 +24,7 @@ export default function MiniPatientListItem({ patientInfo, onPress, key }) {
         {/* CONTENT */}
         <View style={{ flex: 1, paddingLeft: 10, paddingRight: 20 }}>
           <AppText style={[{ fontSize: 15, marginBottom: 5 }]}>
-            {"Mr. Richard Quinn"}
+            {patientInfo.fullname}
           </AppText>
         </View>
       </View>

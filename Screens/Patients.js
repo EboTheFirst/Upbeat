@@ -133,7 +133,7 @@ export default function Patients({ navigation }) {
               return (
                 <PatientListItem
                   onPress={() => {
-                    navigation.navigate(routes.PATIENT_INFO, { data: item });
+                    navigation.navigate(routes.PATIENT_INFO, { patient: item });
                   }}
                   patientInfo={item}
                 />

@@ -4,31 +4,96 @@ import { styles } from "../styles";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import SearchBar from "../components/SearchBar";
 import AppText from "../components/AppText";
 import DeviceListItem from "../components/DeviceListItem";
 import AppButton from "./../components/AppButton";
 import AppModal from "../components/AppModal";
-import AppTextInput from "../components/AppTextInput";
+import FormTextInput from "../components/FormTextInput";
 import { routes } from "../constants/routes";
+import { addDevice } from "../api/users.api";
+import Submit from "../components/Submit";
+import * as Yup from "yup";
+import { Formik } from "formik";
+import userStorage from "../appstorage/user";
+import Loading from "../components/Loading";
+import jwtDecode from "jwt-decode";
+import { getRecs } from "../api/recordings.api";
 
 export default function Devices({ navigation }) {
-  const { appTheme } = useContext(AppContext);
+  const { appTheme, user, setUser } = useContext(AppContext);
   const [criteria, setCriteria] = useState("id");
   const [modalHidden, setModalHidden] = useState(true);
   const [filteredDevices, setFilteredDevices] = useState();
-  const [devices, setDevices] = useState([
-    {
-      id: "01XAD-12425",
-      last_used: "25th June, 2022. 17:43 GMT",
-    },
-    {
-      id: "01XAD-72304",
-      last_used: "25th June, 2022. 9:43 GMT",
-    },
-  ]);
+  const [loading, setLoading] = useState(false);
+
+  const [devices, setDevices] = useState();
+
+  const getRecordings = async () => {
+    const { status, data } = await getRecs(user.connectedDevices);
+    if (status == 200) {
+      // let devs = data.map((r) => r.device.deviceId);
+      // let dev_ids = data.map((r) => r.device._id);
+      // user.connectedDevices.forEach((device) => {
+
+      // });
+      // devs = [...new Set(devs)];
+      // devs = artificialDeviceObjs(devs, data);
+      // console.log(".......\n", devs);
+      // setDevices(devs);
+      let devs = [];
+      user.connectedDevices.forEach((device) => {
+        let recordings = data.filter((rec) => device._id == rec.device);
+        let unassigned = recordings.filter((rec) => !rec.patient).length;
+        devs.push({
+          device,
+          recordings,
+          unassigned,
+        });
+        setDevices(devs);
+      });
+    } else {
+      alert(`${status}: No recordings from connected devices`);
+    }
+  };
+  useEffect(() => {
+    getRecordings();
+    const willFocusSubscription = navigation.addListener("focus", () => {
+      getRecordings();
+    });
+
+    return willFocusSubscription;
+  }, [user]);
+
+  const validationSchema = Yup.object().shape({
+    deviceId: Yup.string().required().label("Device ID"),
+  });
+
+  const addHandler = async (formData) => {
+    setLoading(true);
+    for (const key in formData) {
+      formData[key] = formData[key].trim();
+    }
+    const { status, data } = await addDevice(user._id, formData.deviceId);
+    if (status == 200) {
+      setUser(jwtDecode(data));
+      userStorage.storeUser(data);
+      alert("Device added");
+    } else if (status == 404) {
+      alert("Invalid device ID");
+    } else {
+      alert(status);
+    }
+    setModalHidden(true);
+    console.log("End");
+    setLoading(false);
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <View
@@ -111,14 +176,13 @@ export default function Devices({ navigation }) {
         >
           <FlatList
             data={devices}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.device.deviceId}
             renderItem={({ item }) => {
               return (
                 <DeviceListItem
                   onPress={() => {
                     navigation.navigate(routes.RECORDINGS_DEVICE, {
-                      value: item.id,
-                      filter: "device",
+                      recordings: item.recordings,
                     });
                   }}
                   deviceInfo={item}
@@ -146,6 +210,7 @@ export default function Devices({ navigation }) {
           </AppButton>
         </View>
       </View>
+
       <AppModal hidden={modalHidden}>
         <View style={[styles.row, { justifyContent: "flex-end" }]}>
           <FontAwesome
@@ -158,10 +223,20 @@ export default function Devices({ navigation }) {
             color={mode[appTheme].text}
           />
         </View>
-        <AppTextInput placeholder={"Enter device ID"} />
-        <AppTextInput placeholder={"Enter an alias"} />
-        <AppButton>Add</AppButton>
+        <Formik
+          initialValues={{
+            deviceId: "",
+          }}
+          validationSchema={validationSchema}
+          onSubmit={addHandler}
+        >
+          <View style={styles.row}>
+            <FormTextInput name="deviceId" placeholder={"Enter device ID"} />
+            <Submit style={{ width: 60, marginLeft: 5 }}>Add</Submit>
+          </View>
+        </Formik>
       </AppModal>
+
       <StatusBar style="auto" />
     </View>
   );

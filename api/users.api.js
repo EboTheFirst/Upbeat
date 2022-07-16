@@ -6,6 +6,9 @@ const signup = (user) => {
 const login = (user) => {
   return client.post("/login", user);
 };
+const addDevice = (userId, deviceId) => {
+  return client.post("/deviceadd", { userId, deviceId });
+};
 const registerPushToken = (userId, expoPushToken) => {
   return client.post("/registertoken", { userId, expoPushToken });
 };
@@ -27,6 +30,7 @@ const deregisterPushToken = (userId) => {
 export {
   signup,
   login,
+  addDevice,
   registerPushToken,
   sendNotification,
   deregisterPushToken,

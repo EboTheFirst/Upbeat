@@ -4,7 +4,7 @@ import { styles } from "../styles";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import SearchBar from "../components/SearchBar";
 import AppText from "../components/AppText";
@@ -15,60 +15,59 @@ import AppTextInput from "../components/AppTextInput";
 import AppButton from "../components/AppButton";
 import PatientListItem from "../components/PatientListItem";
 import MiniPatientListItem from "../components/MiniPatientListItem";
+import { get } from "../api/patients.api";
+import { update } from "../api/recordings.api";
 
 export default function Recordings_Device({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
   const [criteria, setCriteria] = useState("name");
   const [modalHidden, setModalHidden] = useState(true);
-  const [recordings, setRecordings] = useState([
-    {
-      id: "01-7204",
-      label: "Ama-Aortic",
-    },
-    {
-      id: "01XAD-12425",
-      label: "Kofi-Mitral",
-      patientId: "324",
-    },
-    {
-      id: "01XAD-72304",
-      label: "Ama-Aortic",
-      patientId: "324",
-    },
-  ]);
-  const [patients, setPatients] = useState([
-    {
-      id: "nndj",
-      name: "Ms. Pista Longrose",
-      last_modified: "25th June, 2022. 17:43 GMT",
-    },
-    {
-      id: "siddus",
-      name: "Mr. Richie Lincoln",
-      last_modified: "25th June, 2022. 9:43 GMT",
-    },
-    {
-      id: "sidds",
-      name: "Mr. Richie Lincoln",
-      last_modified: "25th June, 2022. 9:43 GMT",
-    },
-    {
-      id: "sdds",
-      name: "Mr. Richie Lincoln",
-      last_modified: "25th June, 2022. 9:43 GMT",
-    },
-    {
-      id: "sis",
-      name: "Mr. Richie Lincoln",
-      last_modified: "25th June, 2022. 9:43 GMT",
-    },
-    {
-      id: "siijdds",
-      name: "Mr. Richie Lincoln",
-      last_modified: "25th June, 2022. 9:43 GMT",
-    },
-  ]);
+  const [recordings, setRecordings] = useState(route.params.recordings);
+  const [selectedRec, setSelectedRec] = useState();
+  const [patients, setPatients] = useState();
+  const [refreshing, setRefreshing] = useState(false);
+  const [filteredPatients, setFilteredPatients] = useState();
+  const [label, setLabel] = useState();
 
+  const loadPatients = async () => {
+    const { status, data } = await get();
+    if (status == 200) {
+      setPatients(data);
+      setFilteredPatients(data);
+    } else {
+      alert("Error getting patients");
+    }
+  };
+
+  const updateRec = async (recording) => {
+    const { status, data } = await update(recording);
+    if (status == 200) {
+      let recs = [...recordings];
+      let index = recs.indexOf(selectedRec);
+
+      if (~index) {
+        recs[index] = data;
+        setRecordings(recs);
+      }
+      setModalHidden(true);
+
+      alert("Done");
+    } else {
+      alert("Error assigning recording to patient");
+    }
+  };
+
+  const searchHandler = (text) => {
+    const filt = patients.filter((patient) => {
+      return patient.fullname.toLowerCase().search(text.toLowerCase()) != -1;
+    });
+
+    setFilteredPatients(filt);
+  };
+
+  useEffect(() => {
+    loadPatients();
+  }, []);
   return (
     <View
       style={{
@@ -147,9 +146,9 @@ export default function Recordings_Device({ navigation, route }) {
             { justifyContent: "space-around", marginTop: 20 },
           ]}
         >
-          <AppText style={[{ fontSize: 14 }]}>
+          {/* <AppText style={[{ fontSize: 14 }]}>
             Showing recordings from {route.params.filter} {route.params.value}
-          </AppText>
+          </AppText> */}
         </View>
         <View
           style={{
@@ -160,22 +159,21 @@ export default function Recordings_Device({ navigation, route }) {
         >
           <FlatList
             data={recordings}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item._id}
             renderItem={({ item }) => {
-              console.log(item);
               return (
                 <RecordingListItem
                   recordingsInfo={item}
                   onPress={() => {
-                    item.patientId
+                    setSelectedRec(item);
+                    item.patient
                       ? navigation.navigate(routes.RESULTS_DETAILS)
                       : setModalHidden(false);
                   }}
                 />
               );
             }}
-            // refreshing={refreshing}
-            // onRefresh={retrieveChats}
+            refreshing={refreshing}
           />
         </View>
       </View>
@@ -190,9 +188,10 @@ export default function Recordings_Device({ navigation, route }) {
             color={mode[appTheme].text}
           />
         </View>
-        <View style={{ height: "90%", width: "60%" }}>
+        <View style={{ height: "70%", width: "60%" }}>
           <View style={[styles.row, { justifyContent: "center" }]}>
             <SearchBar
+              onChangeText={searchHandler}
               style={{ marginHorizontal: 20 }}
               searchInputStyle={{ minWidth: 230 }}
               placeholder="Search for a patient"
@@ -206,37 +205,36 @@ export default function Recordings_Device({ navigation, route }) {
             }}
           >
             <FlatList
-              data={patients}
-              keyExtractor={(item) => item.id}
+              data={filteredPatients}
+              keyExtractor={(item) => item._id}
+              refreshing={refreshing}
               renderItem={({ item }) => {
-                console.log(item);
                 return (
                   <MiniPatientListItem
                     onPress={() => {
-                      Alert.alert(
-                        "Confirmation",
-                        `Assign recording to ${item.name}?`,
-                        [
-                          {
-                            text: "Cancel",
-                            style: "cancel",
-                          },
-                          {
-                            text: "Yes",
-                            onPress: () => {
-                              console.log("OK Pressed");
-                            },
-                          },
-                        ]
-                      );
+                      label
+                        ? Alert.alert(
+                            "Confirmation",
+                            `Label recording as '${label}', and assign to ${item.fullname}?`,
+                            [
+                              {
+                                text: "Cancel",
+                                style: "cancel",
+                              },
+                              {
+                                text: "Yes",
+                                onPress: () => {
+                                  let rec = selectedRec;
+                                  rec.patient = item._id;
+                                  rec.label = label.trim();
+                                  updateRec(rec);
+                                },
+                              },
+                            ]
+                          )
+                        : alert("Please enter a LABEL first");
                     }}
                     patientInfo={item}
-                    // onPress={() =>
-                    //   navigation.navigate(routes.MESSAGES, {
-                    //     chatID: item._id,
-                    //     tutor: item.tutor,
-                    //   })
-                    // }
                   />
                 );
               }}
@@ -244,10 +242,13 @@ export default function Recordings_Device({ navigation, route }) {
               // onRefresh={retrieveChats}
             />
           </View>
-          <View style={{ alignSelf: "center" }}>
-            <AppTextInput placeholder={"Enter a label"} />
-            <AppTextInput placeholder={"Select a patient"} />
-            <AppButton>Assign</AppButton>
+          <View style={{ alignSelf: "center", marginTop: 20 }}>
+            <AppText style={{ fontSize: 14, marginTop: 30 }}>LABEL</AppText>
+            <AppTextInput
+              value={label}
+              onChangeText={(text) => setLabel(text)}
+              placeholder={"Enter a label"}
+            />
           </View>
         </View>
       </AppModal>

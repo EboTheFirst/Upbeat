@@ -13,7 +13,7 @@ export const mode = {
     theme1: "#2085AD",
     theme2: "#25BDD6",
     text: "#DEE5F3",
-    danger: "#A60101",
+    danger: "#FF0707",
   },
   Sea: {
     background: "#161C60",

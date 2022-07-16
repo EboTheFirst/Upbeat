@@ -4,7 +4,7 @@ import { styles } from "../styles";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import ImageCard from "../components/ImageCard";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "../components/AppText";
@@ -14,9 +14,13 @@ import AppButton from "../components/AppButton";
 import { routes } from "../constants/routes";
 import * as Yup from "yup";
 import { Formik } from "formik";
+import { getByPatient } from "../api/recordings.api";
 
 export default function PatientInfo({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
+  const [recordings, setRecordings] = useState();
+  const [recNum, setRecNum] = useState();
+  const [murmurNum, setMurmurNum] = useState();
   const validationSchema = Yup.object().shape({
     fullname: Yup.string().required().label("Full name"),
     age: Yup.number().min(0).required().label("Age"),
@@ -27,8 +31,25 @@ export default function PatientInfo({ navigation, route }) {
 
   const submitHandler = async (formData) => {};
 
+  const getRecs = async () => {
+    const { status, data } = await getByPatient(route.params.patient._id);
+    if (status == 200) {
+      console.log(data);
+      setRecordings(data);
+      setRecNum(data.length);
+      let murNum = 0;
+      data.forEach((rec) => {
+        if (rec.mumur) {
+          murNum++;
+        }
+      });
+      setMurmurNum(murNum);
+    } else {
+      alert(`${status}: error`);
+    }
+  };
   useEffect(() => {
-    console.log(route);
+    getRecs();
   }, []);
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
@@ -70,7 +91,8 @@ export default function PatientInfo({ navigation, route }) {
           onPress={() => {
             navigation.navigate(routes.RECORDINGS_PATIENT, {
               filter: "patient ",
-              value: "Kofi",
+              value: route.params.patient.fullname,
+              recordings: recordings,
             });
           }}
           style={[styles.card, { padding: 1, marginTop: 20 }]}
@@ -106,7 +128,7 @@ export default function PatientInfo({ navigation, route }) {
                   { fontSize: 20, color: mode[THEMES.DARK].text },
                 ]}
               >
-                {"Patient has 3 Recordings"}
+                Patient has {recNum || "No"} Recording{recNum != 1 && "s"}
               </AppText>
               <AppText
                 style={[
@@ -119,7 +141,7 @@ export default function PatientInfo({ navigation, route }) {
                   },
                 ]}
               >
-                {"Murmurs found in 2 Recordings"}
+                Murmurs found in {murmurNum} Recording{murmurNum != 1 && "s"}
               </AppText>
             </View>
             {/* FOOTER */}
@@ -160,11 +182,11 @@ export default function PatientInfo({ navigation, route }) {
           >
             <Formik
               initialValues={{
-                fullname: route.params.data.fullname,
-                age: route.params.data.age,
-                gender: route.params.data.gender,
-                contact: route.params.data.contact,
-                residence: route.params.data.residence,
+                fullname: route.params.patient.fullname,
+                age: route.params.patient.age,
+                gender: route.params.patient.gender,
+                contact: route.params.patient.contact,
+                residence: route.params.patient.residence,
               }}
               validationSchema={validationSchema}
               onSubmit={submitHandler}
