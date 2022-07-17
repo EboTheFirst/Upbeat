@@ -8,4 +8,8 @@ const get = (userId) => {
   return client.get(`/devices/${userId}`);
 };
 
-export { add, get };
+const update = (device) => {
+  return client.put(`/devices`, device);
+};
+
+export { add, get, update };

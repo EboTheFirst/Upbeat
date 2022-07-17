@@ -1,19 +1,59 @@
 import { StatusBar } from "expo-status-bar";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { styles } from "../styles";
 import { Feather } from "@expo/vector-icons";
 import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import ImageCard from "../components/ImageCard";
 import { routes } from "../constants/routes";
 import AppText from "../components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
 import { THEMES } from "../constants/themes";
+import { update } from "../api/users.api";
+import * as Notifications from "expo-notifications";
+import jwtDecode from "jwt-decode";
+import userStorage from "../appstorage/user";
 
 export default function Home({ navigation }) {
-  const { appTheme } = useContext(AppContext);
+  const { user, setUser, appTheme } = useContext(AppContext);
 
+  const registerForPushNotificationsAsync = async () => {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
+      return;
+    }
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    let u = { ...user };
+    u.expoPushToken = token;
+    const { data, status } = await update(u);
+    if (status == 200) {
+      setUser(jwtDecode(data));
+      userStorage.storeUser(data);
+    } else {
+      alert("Please grant notification permissions");
+    }
+
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+  };
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       {/* TOP BAR START */}

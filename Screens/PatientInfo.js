@@ -1,7 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import { TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, TouchableOpacity, View } from "react-native";
 import { styles } from "../styles";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Feather,
+  FontAwesome,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
 import { useContext, useEffect, useState } from "react";
@@ -15,12 +19,19 @@ import { routes } from "../constants/routes";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import { getByPatient } from "../api/recordings.api";
+import AppModal from "../components/AppModal";
+import SearchBar from "../components/SearchBar";
+import MiniDeviceListItem from "../components/MiniDeviceListItem";
+import { update } from "../api/devices.api";
 
 export default function PatientInfo({ navigation, route }) {
-  const { appTheme } = useContext(AppContext);
+  const { appTheme, user } = useContext(AppContext);
   const [recordings, setRecordings] = useState();
   const [recNum, setRecNum] = useState();
   const [murmurNum, setMurmurNum] = useState();
+  const [modalHidden, setModalHidden] = useState(true);
+  const [filteredDevices, setFilteredDevices] = useState(user.connectedDevices);
+
   const validationSchema = Yup.object().shape({
     fullname: Yup.string().required().label("Full name"),
     age: Yup.number().min(0).required().label("Age"),
@@ -29,7 +40,26 @@ export default function PatientInfo({ navigation, route }) {
     residence: Yup.string().required().label("Residence"),
   });
 
-  const submitHandler = async (formData) => {};
+  const searchHandler = (text) => {
+    const filt = user.connectedDevices.filter((device) => {
+      return device.deviceId.toLowerCase().search(text.toLowerCase()) != -1;
+    });
+
+    setFilteredDevices(filt);
+  };
+
+  const updateDevice = async (device) => {
+    const { status, data } = await update(device);
+    if (status == 200) {
+      alert(
+        `Successful. Next recording from device ${device.deviceId} will be assigned to ${route.params.patient.fullname}`
+      );
+    } else {
+      alert(`${status}: Error`);
+    }
+  };
+
+  const updateHandler = () => {};
 
   const getRecs = async () => {
     const { status, data } = await getByPatient(route.params.patient._id);
@@ -161,7 +191,23 @@ export default function PatientInfo({ navigation, route }) {
           </LinearGradient>
         </TouchableOpacity>
         {/* AUDIO BOX END */}
-
+        <TouchableOpacity onPress={() => setModalHidden(false)}>
+          <LinearGradient
+            colors={[mode[appTheme].theme1, "rgba(0,0,0,0.5)"]}
+            style={[
+              {
+                marginTop: 10,
+                borderRadius: 5,
+                padding: 10,
+                justifyContent: "center",
+              },
+            ]}
+          >
+            <AppText style={{ fontSize: 14, fontFamily: "DMSans_500Medium" }}>
+              GET PATIENT RECORDING
+            </AppText>
+          </LinearGradient>
+        </TouchableOpacity>
         <View
           style={{
             flex: 1,
@@ -189,7 +235,7 @@ export default function PatientInfo({ navigation, route }) {
                 residence: route.params.patient.residence,
               }}
               validationSchema={validationSchema}
-              onSubmit={submitHandler}
+              onSubmit={updateHandler}
             >
               <>
                 <FormTextInput
@@ -237,6 +283,70 @@ export default function PatientInfo({ navigation, route }) {
           </View>
         </View>
       </View>
+      <AppModal hidden={modalHidden}>
+        <View style={[styles.row, { justifyContent: "flex-end" }]}>
+          <FontAwesome
+            onPress={() => {
+              setModalHidden(true);
+            }}
+            name="close"
+            size={20}
+            color={mode[appTheme].text}
+          />
+        </View>
+        <View style={{ width: "60%" }}>
+          <View style={[styles.row, { justifyContent: "center" }]}>
+            <SearchBar
+              onChangeText={searchHandler}
+              style={{ marginHorizontal: 20 }}
+              searchInputStyle={{ minWidth: 230 }}
+              placeholder="Search for a device"
+            />
+          </View>
+
+          <View
+            style={{
+              marginTop: 10,
+            }}
+          >
+            <FlatList
+              data={filteredDevices}
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => {
+                return (
+                  <MiniDeviceListItem
+                    onPress={() => {
+                      Alert.alert(
+                        "Confirmation",
+                        `Assign next recording from device '${item.deviceId}' to ${route.params.patient.fullname}?`,
+                        [
+                          {
+                            text: "Cancel",
+                            style: "cancel",
+                          },
+                          {
+                            text: "Yes",
+                            onPress: () => {
+                              let dev = { ...item };
+                              dev.nextRecordingPatient =
+                                route.params.patient._id;
+                              dev.userExpoPushToken = user.expoPushToken;
+                              updateDevice(dev);
+                            },
+                          },
+                        ]
+                      );
+                    }}
+                    deviceInfo={item}
+                  />
+                );
+              }}
+              // refreshing={refreshing}
+              // onRefresh={retrieveChats}
+            />
+          </View>
+        </View>
+      </AppModal>
       <StatusBar style="auto" />
     </View>
   );

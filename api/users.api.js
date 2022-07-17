@@ -9,8 +9,8 @@ const login = (user) => {
 const addDevice = (userId, deviceId) => {
   return client.post("/deviceadd", { userId, deviceId });
 };
-const registerPushToken = (userId, expoPushToken) => {
-  return client.post("/registertoken", { userId, expoPushToken });
+const update = (user) => {
+  return client.put("/", user);
 };
 
 const sendNotification = ({ title, message, data, targetToken, channelId }) => {
@@ -31,7 +31,7 @@ export {
   signup,
   login,
   addDevice,
-  registerPushToken,
+  update,
   sendNotification,
   deregisterPushToken,
 };
