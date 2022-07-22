@@ -22,13 +22,18 @@ import { getByPatient } from "../api/recordings.api";
 import AppModal from "../components/AppModal";
 import SearchBar from "../components/SearchBar";
 import MiniDeviceListItem from "../components/MiniDeviceListItem";
-import { update } from "../api/devices.api";
+import * as devicesApi from "../api/devices.api";
+import * as patientsApi from "../api/patients.api";
+import Submit from "../components/Submit";
+import Loading from "../components/Loading";
 
 export default function PatientInfo({ navigation, route }) {
   const { appTheme, user } = useContext(AppContext);
   const [recordings, setRecordings] = useState();
   const [recNum, setRecNum] = useState();
+  const [patient, setPatient] = useState(route.params.patient);
   const [murmurNum, setMurmurNum] = useState();
+  const [loading, setLoading] = useState(false);
   const [modalHidden, setModalHidden] = useState(true);
   const [filteredDevices, setFilteredDevices] = useState(user.connectedDevices);
 
@@ -49,7 +54,8 @@ export default function PatientInfo({ navigation, route }) {
   };
 
   const updateDevice = async (device) => {
-    const { status, data } = await update(device);
+    setLoading(true);
+    const { status, data } = await devicesApi.update(device);
     if (status == 200) {
       alert(
         `Successful. Next recording from device ${device.deviceId} will be assigned to ${route.params.patient.fullname}`
@@ -57,11 +63,25 @@ export default function PatientInfo({ navigation, route }) {
     } else {
       alert(`${status}: Error`);
     }
+    setLoading(false);
   };
 
-  const updateHandler = () => {};
+  const updateHandler = async (patient) => {
+    setLoading(true);
+    const { status, data } = await patientsApi.update({
+      ...patient,
+      _id: route.params.patient._id,
+    });
+    if (status == 200) {
+      alert(`Updated`);
+    } else {
+      alert(`${status}: Error`);
+    }
+    setLoading(false);
+  };
 
   const getRecs = async () => {
+    setLoading(true);
     const { status, data } = await getByPatient(route.params.patient._id);
     if (status == 200) {
       console.log(data);
@@ -77,10 +97,13 @@ export default function PatientInfo({ navigation, route }) {
     } else {
       alert(`${status}: error`);
     }
+    setLoading(false);
   };
+
   useEffect(() => {
     getRecs();
   }, []);
+
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       {/* TOP BAR START */}
@@ -228,71 +251,74 @@ export default function PatientInfo({ navigation, route }) {
           >
             <Formik
               initialValues={{
-                fullname: route.params.patient.fullname,
-                age: route.params.patient.age,
-                gender: route.params.patient.gender,
-                contact: route.params.patient.contact,
-                residence: route.params.patient.residence,
+                fullname: patient.fullname,
+                age: patient.age,
+                gender: patient.gender,
+                contact: patient.contact,
+                residence: patient.residence,
               }}
               validationSchema={validationSchema}
               onSubmit={updateHandler}
             >
-              <>
-                <FormTextInput
-                  inputStyle={{ width: 280 }}
-                  iconName={"account-outline"}
-                  placeholder={"Patient's full name"}
-                  name="fullname"
-                />
-                <View style={[styles.row]}>
+              {({ handleReset }) => (
+                <>
                   <FormTextInput
-                    inputStyle={{ minWidth: 80 }}
-                    iconName={"clock-outline"}
+                    inputStyle={{ width: 280 }}
+                    iconName={"account-outline"}
+                    placeholder={"Patient's full name"}
+                    name="fullname"
+                  />
+                  <View style={[styles.row]}>
+                    <FormTextInput
+                      inputStyle={{ minWidth: 80 }}
+                      iconName={"clock-outline"}
+                      keyboardType={"numeric"}
+                      placeholder={"Age"}
+                      name="age"
+                    />
+                    <FormTextInput
+                      style={{ marginLeft: 25 }}
+                      inputStyle={{ minWidth: 150 }}
+                      iconName={"gender-male-female"}
+                      placeholder={"Gender"}
+                      name="gender"
+                    />
+                  </View>
+                  <FormTextInput
+                    iconName={"contacts-outline"}
                     keyboardType={"numeric"}
-                    placeholder={"Age"}
-                    name="age"
+                    placeholder={"Contact"}
+                    name="contact"
                   />
                   <FormTextInput
-                    style={{ marginLeft: 25 }}
-                    inputStyle={{ minWidth: 150 }}
-                    iconName={"gender-male-female"}
-                    placeholder={"Gender"}
-                    name="gender"
+                    iconName={"home-outline"}
+                    inputStyle={{ width: 280 }}
+                    placeholder={"Residence"}
+                    name="residence"
                   />
-                </View>
-                <FormTextInput
-                  iconName={"contacts-outline"}
-                  keyboardType={"numeric"}
-                  placeholder={"Contact"}
-                  name="contact"
-                />
-                <FormTextInput
-                  iconName={"home-outline"}
-                  inputStyle={{ width: 280 }}
-                  placeholder={"Residence"}
-                  name="residence"
-                />
-                <View style={[styles.row, { justifyContent: "space-between" }]}>
-                  <AppButton>
-                    <MaterialCommunityIcons name="undo" size={20} /> Reset
-                  </AppButton>
-                  <AppButton>Update</AppButton>
-                </View>
-              </>
+                  <View
+                    style={[styles.row, { justifyContent: "space-between" }]}
+                  >
+                    <AppButton onPress={handleReset}>
+                      <MaterialCommunityIcons name="undo" size={20} /> Reset
+                    </AppButton>
+                    <Submit>Update</Submit>
+                  </View>
+                </>
+              )}
             </Formik>
           </View>
         </View>
       </View>
       <AppModal hidden={modalHidden}>
         <View style={[styles.row, { justifyContent: "flex-end" }]}>
-          <FontAwesome
+          <TouchableOpacity
             onPress={() => {
               setModalHidden(true);
             }}
-            name="close"
-            size={20}
-            color={mode[appTheme].text}
-          />
+          >
+            <FontAwesome name="close" size={20} color={mode[appTheme].text} />
+          </TouchableOpacity>
         </View>
         <View style={{ width: "60%" }}>
           <View style={[styles.row, { justifyContent: "center" }]}>
@@ -303,7 +329,9 @@ export default function PatientInfo({ navigation, route }) {
               placeholder="Search for a device"
             />
           </View>
-
+          <AppText style={{ fontSize: 12 }}>
+            Select device to get next recording from
+          </AppText>
           <View
             style={{
               marginTop: 10,
@@ -348,6 +376,7 @@ export default function PatientInfo({ navigation, route }) {
         </View>
       </AppModal>
       <StatusBar style="auto" />
+      {loading && <Loading />}
     </View>
   );
 }

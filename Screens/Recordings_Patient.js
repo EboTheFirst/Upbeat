@@ -108,6 +108,18 @@ export default function Recordings_Patient({ navigation, route }) {
           <FlatList
             data={recordings}
             keyExtractor={(item) => item._id}
+            ListEmptyComponent={() => (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 100,
+                }}
+              >
+                <AppText style={{ fontSize: 15 }}>NO RECORDINGS</AppText>
+              </View>
+            )}
             renderItem={({ item }) => {
               console.log(item);
               return (

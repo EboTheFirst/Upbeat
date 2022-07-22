@@ -32,6 +32,7 @@ export default function Devices({ navigation }) {
   const [devices, setDevices] = useState();
 
   const getRecordings = async () => {
+    setLoading(true);
     const { status, data } = await getRecs(user.connectedDevices);
     if (status == 200) {
       // let devs = data.map((r) => r.device.deviceId);
@@ -57,6 +58,7 @@ export default function Devices({ navigation }) {
     } else {
       alert(`${status}: No recordings from connected devices`);
     }
+    setLoading(false);
   };
   useEffect(() => {
     getRecordings();
@@ -90,10 +92,6 @@ export default function Devices({ navigation }) {
     console.log("End");
     setLoading(false);
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <View
@@ -238,6 +236,7 @@ export default function Devices({ navigation }) {
       </AppModal>
 
       <StatusBar style="auto" />
+      {loading && <Loading />}
     </View>
   );
 }

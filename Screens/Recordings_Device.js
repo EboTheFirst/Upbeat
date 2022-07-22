@@ -17,6 +17,7 @@ import PatientListItem from "../components/PatientListItem";
 import MiniPatientListItem from "../components/MiniPatientListItem";
 import { get } from "../api/patients.api";
 import { update } from "../api/recordings.api";
+import Loading from "../components/Loading";
 
 export default function Recordings_Device({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
@@ -28,6 +29,7 @@ export default function Recordings_Device({ navigation, route }) {
   const [refreshing, setRefreshing] = useState(false);
   const [filteredPatients, setFilteredPatients] = useState();
   const [label, setLabel] = useState();
+  const [loading, setLoading] = useState(false);
 
   const loadPatients = async () => {
     const { status, data } = await get();
@@ -40,6 +42,7 @@ export default function Recordings_Device({ navigation, route }) {
   };
 
   const updateRec = async (recording) => {
+    setLoading(true);
     const { status, data } = await update(recording);
     if (status == 200) {
       let recs = [...recordings];
@@ -55,6 +58,7 @@ export default function Recordings_Device({ navigation, route }) {
     } else {
       alert("Error assigning recording to patient");
     }
+    setLoading(false);
   };
 
   const searchHandler = (text) => {
@@ -68,6 +72,7 @@ export default function Recordings_Device({ navigation, route }) {
   useEffect(() => {
     loadPatients();
   }, []);
+
   return (
     <View
       style={{
@@ -160,6 +165,18 @@ export default function Recordings_Device({ navigation, route }) {
           <FlatList
             data={recordings}
             keyExtractor={(item) => item._id}
+            ListEmptyComponent={() => (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 100,
+                }}
+              >
+                <AppText style={{ fontSize: 15 }}>NO RECORDINGS</AppText>
+              </View>
+            )}
             renderItem={({ item }) => {
               return (
                 <RecordingListItem
@@ -253,6 +270,7 @@ export default function Recordings_Device({ navigation, route }) {
         </View>
       </AppModal>
       <StatusBar style="auto" />
+      {loading && <Loading />}
     </View>
   );
 }

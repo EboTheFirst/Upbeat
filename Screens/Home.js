@@ -18,6 +18,14 @@ import userStorage from "../appstorage/user";
 export default function Home({ navigation }) {
   const { user, setUser, appTheme } = useContext(AppContext);
 
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+
   const registerForPushNotificationsAsync = async () => {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
@@ -46,7 +54,7 @@ export default function Home({ navigation }) {
         name: "default",
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
+        lightColor: mode[appTheme].theme2,
       });
     }
   };
@@ -54,6 +62,7 @@ export default function Home({ navigation }) {
   useEffect(() => {
     registerForPushNotificationsAsync();
   }, []);
+
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       {/* TOP BAR START */}

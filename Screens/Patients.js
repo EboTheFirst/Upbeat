@@ -28,6 +28,7 @@ export default function Patients({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
 
   const loadPatients = async () => {
+    setLoading(true);
     const { status, data } = await get();
     if (status == 200) {
       setPatients(data);
@@ -35,10 +36,15 @@ export default function Patients({ navigation }) {
     } else {
       alert("Error getting patients");
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    loadPatients().catch(console.error);
+    loadPatients();
+    const willFocusSubscription = navigation.addListener("focus", () => {
+      loadPatients();
+    });
+    return willFocusSubscription;
   }, []);
 
   const validationSchema = Yup.object().shape({
@@ -74,10 +80,6 @@ export default function Patients({ navigation }) {
 
     setFilteredPatients(filt);
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <View
@@ -129,6 +131,18 @@ export default function Patients({ navigation }) {
           <FlatList
             data={filteredPatients}
             keyExtractor={(item) => item._id}
+            ListEmptyComponent={() => (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 100,
+                }}
+              >
+                <AppText style={{ fontSize: 15 }}>NO PATIENTS</AppText>
+              </View>
+            )}
             renderItem={({ item }) => {
               return (
                 <PatientListItem
@@ -216,6 +230,7 @@ export default function Patients({ navigation }) {
         </Formik>
       </AppModal>
       <StatusBar style="auto" />
+      {loading && <Loading />}
     </View>
   );
 }
