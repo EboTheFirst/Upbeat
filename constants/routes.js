@@ -11,4 +11,5 @@ export const routes = {
   SETTINGS: "Settings",
   PATIENTS: "Patients",
   PATIENT_INFO: "Patient_Info",
+  UPLOAD: "Upload",
 };

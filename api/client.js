@@ -1,7 +1,12 @@
 import apisauce from "apisauce";
 import user from "../appstorage/user";
 
-const client = apisauce.create({ baseURL: "http://192.168.43.146:4000" });
+const client = apisauce.create({
+  baseURL: "http://192.168.43.146:4000",
+  headers: {
+    "Cache-Control": "no-cache",
+  },
+});
 
 client.addAsyncRequestTransform(async (request) => {
   const token = await user.getUser();

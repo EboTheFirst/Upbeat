@@ -14,6 +14,7 @@ import { update } from "../api/users.api";
 import * as Notifications from "expo-notifications";
 import jwtDecode from "jwt-decode";
 import userStorage from "../appstorage/user";
+import * as DocumentPicker from "expo-document-picker";
 
 export default function Home({ navigation }) {
   const { user, setUser, appTheme } = useContext(AppContext);
@@ -46,7 +47,7 @@ export default function Home({ navigation }) {
       setUser(jwtDecode(data));
       userStorage.storeUser(data);
     } else {
-      alert("Please grant notification permissions");
+      alert("Could not contact our servers");
     }
 
     if (Platform.OS === "android") {
@@ -55,6 +56,16 @@ export default function Home({ navigation }) {
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: mode[appTheme].theme2,
+      });
+    }
+  };
+
+  const handleUploadPressed = async () => {
+    let result = await DocumentPicker.getDocumentAsync({ type: "audio/x-wav" });
+    if (result.type == "success") {
+      navigation.navigate(routes.UPLOAD, {
+        uri: result.uri,
+        filename: result.name,
       });
     }
   };
@@ -133,6 +144,7 @@ export default function Home({ navigation }) {
           headerText="DEVICES"
         />
         <ImageCard
+          onPress={handleUploadPressed}
           source={require("../assets/cd.jpg")}
           headerText="UPLOAD HEART SOUND"
         />

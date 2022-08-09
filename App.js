@@ -22,6 +22,7 @@ import Recordings_Device from "./Screens/Recordings_Device";
 import jwtDecode from "jwt-decode";
 import userStorage from "./appstorage/user";
 import { LogBox } from "react-native";
+import Upload from "./Screens/Upload";
 
 LogBox.ignoreLogs([
   "ViewPropTypes will be removed",
@@ -98,6 +99,7 @@ export default function App() {
           <Stack.Screen name={routes.PATIENTS} component={Patients} />
           <Stack.Screen name={routes.PATIENT_INFO} component={PatientInfo} />
           <Stack.Screen name={routes.DEVICES} component={Devices} />
+          <Stack.Screen name={routes.UPLOAD} component={Upload} />
           <Stack.Screen name={routes.RECORDINGS} component={Recordings} />
           <Stack.Screen
             name={routes.RECORDINGS_PATIENT}

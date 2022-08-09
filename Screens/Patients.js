@@ -18,6 +18,7 @@ import { create, get, update } from "../api/patients.api";
 import Loading from "../components/Loading";
 import Submit from "../components/Submit";
 import { Formik } from "formik";
+import { Picker } from "@react-native-picker/picker";
 
 export default function Patients({ navigation }) {
   const { appTheme } = useContext(AppContext);
@@ -26,6 +27,7 @@ export default function Patients({ navigation }) {
   const [filteredPatients, setFilteredPatients] = useState();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [gender, setGender] = useState("Male");
 
   const loadPatients = async () => {
     setLoading(true);
@@ -60,7 +62,7 @@ export default function Patients({ navigation }) {
     for (const key in formData) {
       formData[key] = formData[key].trim();
     }
-    const { status, data } = await create(formData);
+    const { status, data } = await create({ ...formData, gender: gender });
     if (status == 200) {
       alert("Patient added");
       const newPatients = [...patients, data];
@@ -183,7 +185,6 @@ export default function Patients({ navigation }) {
           initialValues={{
             fullname: "",
             age: "",
-            gender: "",
             contact: "",
             residence: "",
           }}
@@ -205,14 +206,22 @@ export default function Patients({ navigation }) {
                 placeholder={"Age"}
                 name="age"
               />
-              <FormTextInput
-                style={{ marginLeft: 25 }}
-                inputStyle={{ minWidth: 150 }}
-                iconName={"gender-male-female"}
-                placeholder={"Gender"}
-                name="gender"
-              />
+              <Picker
+                style={{
+                  backgroundColor: mode[appTheme].theme1,
+                  color: mode[appTheme].text,
+                  marginLeft: 25,
+                  width: 150,
+                  height: 20,
+                }}
+                selectedValue={gender}
+                onValueChange={(itemValue, itemIndex) => setGender(itemValue)}
+              >
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female" />
+              </Picker>
             </View>
+
             <FormTextInput
               iconName={"contacts-outline"}
               keyboardType={"numeric"}
