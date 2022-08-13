@@ -26,6 +26,7 @@ export default function Patients({ navigation }) {
   const [modalHidden, setModalHidden] = useState(true);
   const [patients, setPatients] = useState();
   const [filteredPatients, setFilteredPatients] = useState();
+  const [filter, setFilter] = useState("name");
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [gender, setGender] = useState("Male");
@@ -123,7 +124,29 @@ export default function Patients({ navigation }) {
             placeholder="Search for a patient"
           />
         </View>
-
+        <View style={[styles.row, { justifyContent: "space-around" }]}>
+          <AppText style={{ color: mode[appTheme].text, marginRight: 15 }}>
+            Filter
+          </AppText>
+          <RadioButtonGroup
+            containerStyle={{
+              flexDirection: "row",
+              marginVertical: 5,
+            }}
+            selected={filter}
+            onSelected={(value) => setFilter(value)}
+            radioBackground={mode[appTheme].theme2}
+          >
+            <RadioButtonItem
+              value="name"
+              label={
+                <AppText style={{ fontSize: 18, color: mode[appTheme].text }}>
+                  name
+                </AppText>
+              }
+            />
+          </RadioButtonGroup>
+        </View>
         <View
           style={{
             marginTop: 10,

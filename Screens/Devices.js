@@ -31,6 +31,14 @@ export default function Devices({ navigation }) {
 
   const [devices, setDevices] = useState();
 
+  const searchHandler = (text) => {
+    const filt = devices.filter((dev) => {
+      return dev.device.deviceId.toLowerCase().search(text.toLowerCase()) != -1;
+    });
+
+    setFilteredDevices(filt);
+  };
+
   const getRecordings = async () => {
     setLoading(true);
     const { status, data } = await getRecs(user.connectedDevices);
@@ -54,6 +62,7 @@ export default function Devices({ navigation }) {
           unassigned,
         });
         setDevices(devs);
+        setFilteredDevices(devs);
       });
     } else {
       alert(`${status}: No recordings from connected devices`);
@@ -126,11 +135,14 @@ export default function Devices({ navigation }) {
       {/* TOP BAR END */}
       <View style={{ flex: 1 }}>
         <View style={[styles.row, { justifyContent: "center" }]}>
-          <SearchBar placeholder="Search for device" />
+          <SearchBar
+            placeholder="Search for device"
+            onChangeText={searchHandler}
+          />
         </View>
         <View style={[styles.row, { justifyContent: "space-around" }]}>
           <AppText style={{ color: mode[appTheme].text, marginRight: 15 }}>
-            Criteria :
+            Filter
           </AppText>
           <RadioButtonGroup
             containerStyle={{
@@ -151,15 +163,7 @@ export default function Devices({ navigation }) {
                     marginRight: 15,
                   }}
                 >
-                  id
-                </AppText>
-              }
-            />
-            <RadioButtonItem
-              value="alias"
-              label={
-                <AppText style={{ fontSize: 18, color: mode[appTheme].text }}>
-                  alias
+                  device id
                 </AppText>
               }
             />
@@ -173,7 +177,7 @@ export default function Devices({ navigation }) {
           }}
         >
           <FlatList
-            data={devices}
+            data={filteredDevices}
             keyExtractor={(item) => item.device.deviceId}
             renderItem={({ item }) => {
               return (

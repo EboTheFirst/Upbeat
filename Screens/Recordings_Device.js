@@ -21,9 +21,12 @@ import Loading from "../components/Loading";
 
 export default function Recordings_Device({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
-  const [criteria, setCriteria] = useState("name");
+  const [criteria, setCriteria] = useState("label");
   const [modalHidden, setModalHidden] = useState(true);
   const [recordings, setRecordings] = useState(route.params.recordings);
+  const [filteredRecordings, setFilteredRecordings] = useState(
+    route.params.recordings
+  );
   const [selectedRec, setSelectedRec] = useState();
   const [patients, setPatients] = useState();
   const [refreshing, setRefreshing] = useState(false);
@@ -39,6 +42,14 @@ export default function Recordings_Device({ navigation, route }) {
     } else {
       alert("Error getting patients");
     }
+  };
+
+  const mainSearchHandler = (text) => {
+    const filt = recordings.filter((rec) => {
+      return rec.label.toLowerCase().search(text.toLowerCase()) != -1;
+    });
+
+    setFilteredRecordings(filt);
   };
 
   const updateRec = async (recording) => {
@@ -106,11 +117,14 @@ export default function Recordings_Device({ navigation, route }) {
       </View>
       <View style={{ flex: 1 }}>
         <View style={[styles.row, { justifyContent: "center" }]}>
-          <SearchBar placeholder="Search by patient's name" />
+          <SearchBar
+            placeholder="Search by label"
+            onChangeText={mainSearchHandler}
+          />
         </View>
         <View style={[styles.row, { justifyContent: "space-around" }]}>
           <AppText style={{ color: mode[appTheme].text, marginRight: 15 }}>
-            Search By
+            Filter
           </AppText>
           <RadioButtonGroup
             containerStyle={{
@@ -121,20 +135,6 @@ export default function Recordings_Device({ navigation, route }) {
             onSelected={(value) => setCriteria(value)}
             radioBackground={mode[appTheme].theme2}
           >
-            <RadioButtonItem
-              value="name"
-              label={
-                <AppText
-                  style={{
-                    fontSize: 18,
-                    color: mode[appTheme].text,
-                    marginRight: 15,
-                  }}
-                >
-                  Name
-                </AppText>
-              }
-            />
             <RadioButtonItem
               value="label"
               label={
@@ -163,7 +163,7 @@ export default function Recordings_Device({ navigation, route }) {
           }}
         >
           <FlatList
-            data={recordings}
+            data={filteredRecordings}
             keyExtractor={(item) => item._id}
             ListEmptyComponent={() => (
               <View
@@ -184,7 +184,9 @@ export default function Recordings_Device({ navigation, route }) {
                   onPress={() => {
                     setSelectedRec(item);
                     item.patient
-                      ? navigation.navigate(routes.RESULTS_DETAILS)
+                      ? navigation.navigate(routes.RESULTS_DETAILS, {
+                          recording: item,
+                        })
                       : setModalHidden(false);
                   }}
                 />
@@ -244,7 +246,13 @@ export default function Recordings_Device({ navigation, route }) {
                                   let rec = selectedRec;
                                   rec.patient = item._id;
                                   rec.label = label.trim();
-                                  updateRec(rec);
+
+                                  let payload = {
+                                    _id: selectedRec._id,
+                                    patient: item._id,
+                                    label: label.trim(),
+                                  };
+                                  updateRec(payload);
                                 },
                               },
                             ]

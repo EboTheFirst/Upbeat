@@ -33,14 +33,7 @@ import { THEMES } from "../constants/themes";
 import MiniPatientListItem from "../components/MiniPatientListItem";
 import { get } from "../api/patients.api";
 import AppTextInput from "../components/AppTextInput";
-import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart,
-} from "react-native-chart-kit";
+import { LineChart } from "react-native-chart-kit";
 import getPrediction from "../api/getPrediction";
 
 export default function Upload({ navigation, route }) {

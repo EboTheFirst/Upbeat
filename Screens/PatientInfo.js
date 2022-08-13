@@ -26,6 +26,7 @@ import * as devicesApi from "../api/devices.api";
 import * as patientsApi from "../api/patients.api";
 import Submit from "../components/Submit";
 import Loading from "../components/Loading";
+import AppTextInput from "../components/AppTextInput";
 
 export default function PatientInfo({ navigation, route }) {
   const { appTheme, user } = useContext(AppContext);
@@ -34,6 +35,7 @@ export default function PatientInfo({ navigation, route }) {
   const [patient, setPatient] = useState(route.params.patient);
   const [murmurNum, setMurmurNum] = useState();
   const [loading, setLoading] = useState(false);
+  const [label, setLabel] = useState();
   const [modalHidden, setModalHidden] = useState(true);
   const [filteredDevices, setFilteredDevices] = useState(user.connectedDevices);
 
@@ -57,6 +59,8 @@ export default function PatientInfo({ navigation, route }) {
     setLoading(true);
     const { status, data } = await devicesApi.update(device);
     if (status == 200) {
+      setModalHidden(true);
+      setLabel("");
       alert(
         `Successful. Next recording from device ${device.deviceId} will be assigned to ${route.params.patient.fullname}`
       );
@@ -89,7 +93,7 @@ export default function PatientInfo({ navigation, route }) {
       setRecNum(data.length);
       let murNum = 0;
       data.forEach((rec) => {
-        if (rec.mumur) {
+        if (rec.info.prediction) {
           murNum++;
         }
       });
@@ -341,6 +345,7 @@ export default function PatientInfo({ navigation, route }) {
           <View
             style={{
               marginTop: 10,
+              maxHeight: "50%",
             }}
           >
             <FlatList
@@ -350,26 +355,29 @@ export default function PatientInfo({ navigation, route }) {
                 return (
                   <MiniDeviceListItem
                     onPress={() => {
-                      Alert.alert(
-                        "Confirmation",
-                        `Assign next recording from device '${item.deviceId}' to ${route.params.patient.fullname}?`,
-                        [
-                          {
-                            text: "Cancel",
-                            style: "cancel",
-                          },
-                          {
-                            text: "Yes",
-                            onPress: () => {
-                              let dev = { ...item };
-                              dev.nextRecordingPatient =
-                                route.params.patient._id;
-                              dev.userExpoPushToken = user.expoPushToken;
-                              updateDevice(dev);
-                            },
-                          },
-                        ]
-                      );
+                      label
+                        ? Alert.alert(
+                            "Confirmation",
+                            `Assign next recording from device '${item.deviceId}' to ${route.params.patient.fullname}?`,
+                            [
+                              {
+                                text: "Cancel",
+                                style: "cancel",
+                              },
+                              {
+                                text: "Yes",
+                                onPress: () => {
+                                  let dev = { ...item };
+                                  dev.nextRecordingPatient =
+                                    route.params.patient._id;
+                                  dev.nextRecordingLabel = label;
+                                  dev.userExpoPushToken = user.expoPushToken;
+                                  updateDevice(dev);
+                                },
+                              },
+                            ]
+                          )
+                        : alert("Please enter a LABEL");
                     }}
                     deviceInfo={item}
                   />
@@ -377,6 +385,14 @@ export default function PatientInfo({ navigation, route }) {
               }}
               // refreshing={refreshing}
               // onRefresh={retrieveChats}
+            />
+          </View>
+          <View style={{ alignSelf: "center", marginTop: 20 }}>
+            <AppText style={{ fontSize: 14, marginTop: 30 }}>LABEL</AppText>
+            <AppTextInput
+              value={label}
+              onChangeText={(text) => setLabel(text)}
+              placeholder={"Enter a label"}
             />
           </View>
         </View>

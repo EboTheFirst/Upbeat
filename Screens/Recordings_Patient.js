@@ -13,8 +13,18 @@ import { routes } from "../constants/routes";
 
 export default function Recordings_Patient({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
-  const [criteria, setCriteria] = useState("name");
-  const [recordings, setReults] = useState(route.params.recordings);
+  const [criteria, setCriteria] = useState("label");
+  const [filteredRecordings, setFilteredRecordings] = useState(
+    route.params.recordings
+  );
+
+  const searchHandler = (text) => {
+    const filt = route.params.recordings.filter((rec) => {
+      return rec.label.toLowerCase().search(text.toLowerCase()) != -1;
+    });
+
+    setFilteredRecordings(filt);
+  };
 
   return (
     <View
@@ -49,7 +59,10 @@ export default function Recordings_Patient({ navigation, route }) {
       </View>
       <View style={{ flex: 1 }}>
         <View style={[styles.row, { justifyContent: "center" }]}>
-          <SearchBar placeholder="Search by device" />
+          <SearchBar
+            placeholder="Search by label"
+            onChangeText={searchHandler}
+          />
         </View>
         <View style={[styles.row, { justifyContent: "space-around" }]}>
           <AppText style={{ color: mode[appTheme].text, marginRight: 15 }}>
@@ -65,24 +78,10 @@ export default function Recordings_Patient({ navigation, route }) {
             radioBackground={mode[appTheme].theme2}
           >
             <RadioButtonItem
-              value="name"
-              label={
-                <AppText
-                  style={{
-                    fontSize: 18,
-                    color: mode[appTheme].text,
-                    marginRight: 15,
-                  }}
-                >
-                  ID
-                </AppText>
-              }
-            />
-            <RadioButtonItem
               value="label"
               label={
                 <AppText style={{ fontSize: 18, color: mode[appTheme].text }}>
-                  Alias
+                  label
                 </AppText>
               }
             />
@@ -106,7 +105,7 @@ export default function Recordings_Patient({ navigation, route }) {
           }}
         >
           <FlatList
-            data={recordings}
+            data={filteredRecordings}
             keyExtractor={(item) => item._id}
             ListEmptyComponent={() => (
               <View
@@ -121,12 +120,13 @@ export default function Recordings_Patient({ navigation, route }) {
               </View>
             )}
             renderItem={({ item }) => {
-              console.log(item);
               return (
                 <RecordingListItem
                   recordingsInfo={item}
                   onPress={() => {
-                    navigation.navigate(routes.RESULTS_DETAILS);
+                    navigation.navigate(routes.RESULTS_DETAILS, {
+                      recording: item,
+                    });
                   }}
                 />
               );
