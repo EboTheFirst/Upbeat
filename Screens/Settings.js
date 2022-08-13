@@ -116,6 +116,20 @@ export default function Settings({ navigation }) {
               }
             />
             <RadioButtonItem
+              value={THEMES.GRAYSCALE}
+              label={
+                <AppText
+                  style={{
+                    fontSize: 18,
+                    color: mode[appTheme].text,
+                    marginRight: 15,
+                  }}
+                >
+                  {THEMES.GRAYSCALE}
+                </AppText>
+              }
+            />
+            <RadioButtonItem
               value={THEMES.PITCH_BLACK}
               label={
                 <AppText

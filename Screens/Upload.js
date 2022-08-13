@@ -41,6 +41,7 @@ import {
   ContributionGraph,
   StackedBarChart,
 } from "react-native-chart-kit";
+import getPrediction from "../api/getPrediction";
 
 export default function Upload({ navigation, route }) {
   const { appTheme, user, setUser } = useContext(AppContext);
@@ -50,7 +51,8 @@ export default function Upload({ navigation, route }) {
   const [audioLoaded, setAudioLoaded] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [audioPosition, setAudioPostion] = useState();
+  const [graphData, setGraphData] = useState([0]);
+  const [graphLabels, setGraphLabels] = useState([0]);
 
   const [patients, setPatients] = useState();
   const [refreshing, setRefreshing] = useState(false);
@@ -65,6 +67,20 @@ export default function Upload({ navigation, route }) {
     } else {
       alert("Error getting patients");
     }
+  };
+
+  const getPred = async (uri) => {
+    setLoading(true);
+    const { status, data } = await getPrediction(uri);
+    if (status == 200) {
+      alert(`Prediction received: ${data.alt_prediction}\n
+      certainty: ${data.certainty.toFixed(2)}`);
+      // setGraphData(data.audio_array);
+      // setGraphLabels([...Array(data.audio_array).keys()]);
+    } else {
+      alert(`${status}:Error getting prediction`);
+    }
+    setLoading(false);
   };
 
   const uploadRec = async (uri, label, patient) => {
@@ -209,10 +225,10 @@ export default function Upload({ navigation, route }) {
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <LineChart
           data={{
-            labels: ["January", "February", "March", "April", "May", "June"],
+            labels: graphLabels,
             datasets: [
               {
-                data: [20, 45, 28, 80, 99, 43],
+                data: graphData,
                 strokeWidth: 2,
               },
             ],
@@ -251,7 +267,7 @@ export default function Upload({ navigation, route }) {
             <MaterialCommunityIcons
               name={"waveform"}
               size={35}
-              color={mode[appTheme].text}
+              color={mode[THEMES.DARK].text}
             />
           )}
           <View style={styles.row}>
@@ -259,7 +275,7 @@ export default function Upload({ navigation, route }) {
               <MaterialCommunityIcons
                 name="restart"
                 size={25}
-                color={mode[appTheme].text}
+                color={mode[THEMES.DARK].text}
               />
             </AppButton>
             {!isFinished && (
@@ -267,7 +283,7 @@ export default function Upload({ navigation, route }) {
                 <MaterialCommunityIcons
                   name={!playing ? "play" : "pause"}
                   size={25}
-                  color={mode[appTheme].text}
+                  color={mode[THEMES.DARK].text}
                 />
               </AppButton>
             )}
@@ -275,7 +291,7 @@ export default function Upload({ navigation, route }) {
               <MaterialCommunityIcons
                 name="stop"
                 size={25}
-                color={mode[appTheme].text}
+                color={mode[THEMES.DARK].text}
               />
             </AppButton>
           </View>
@@ -284,7 +300,13 @@ export default function Upload({ navigation, route }) {
             </AppText> */}
         </LinearGradient>
         <AppText>{route.params.filename}</AppText>
-        <AppButton>GET PREDICTION</AppButton>
+        <AppButton
+          onPress={() => {
+            getPred(route.params.uri);
+          }}
+        >
+          GET PREDICTION
+        </AppButton>
         <AppButton
           onPress={() => {
             setModalHidden(false);

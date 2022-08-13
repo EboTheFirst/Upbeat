@@ -226,7 +226,13 @@ export default function PatientInfo({ navigation, route }) {
               },
             ]}
           >
-            <AppText style={{ fontSize: 14, fontFamily: "DMSans_500Medium" }}>
+            <AppText
+              style={{
+                color: mode[THEMES.DARK].text,
+                fontSize: 14,
+                fontFamily: "DMSans_500Medium",
+              }}
+            >
               GET PATIENT RECORDING
             </AppText>
           </LinearGradient>

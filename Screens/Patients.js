@@ -19,6 +19,7 @@ import Loading from "../components/Loading";
 import Submit from "../components/Submit";
 import { Formik } from "formik";
 import { Picker } from "@react-native-picker/picker";
+import { THEMES } from "../constants/themes";
 
 export default function Patients({ navigation }) {
   const { appTheme } = useContext(AppContext);
@@ -209,7 +210,7 @@ export default function Patients({ navigation }) {
               <Picker
                 style={{
                   backgroundColor: mode[appTheme].theme1,
-                  color: mode[appTheme].text,
+                  color: mode[THEMES.DARK].text,
                   marginLeft: 25,
                   width: 150,
                   height: 20,

@@ -3,4 +3,5 @@ export const THEMES = {
   DARK: "Dark",
   SEA: "Sea",
   PITCH_BLACK: "Black",
+  GRAYSCALE: "Grayscale",
 };
