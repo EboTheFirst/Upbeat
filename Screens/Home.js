@@ -104,10 +104,11 @@ export default function Home({ navigation }) {
         style={{
           height: "100%",
           alignItems: "center",
+          paddingTop: 30,
           backgroundColor: mode[appTheme].background,
         }}
       >
-        <View
+        {/* <View
           style={{
             borderLeftWidth: 3,
             marginHorizontal: 10,
@@ -137,7 +138,7 @@ export default function Home({ navigation }) {
               {"\nAssign them at 'Devices'"}
             </AppText>
           </LinearGradient>
-        </View>
+        </View> */}
         <ImageCard
           onPress={() => navigation.navigate(routes.DEVICES)}
           source={require("../assets/steth.jpg")}

@@ -13,7 +13,12 @@ import { mode } from "../constants/colors";
 import { useContext } from "react";
 import AppContext from "../contexts/appContext";
 
-export default function AppText({ children, style, ...otherProps }) {
+export default function AppText({
+  children,
+  style,
+  numberOfLines,
+  ...otherProps
+}) {
   const { appTheme } = useContext(AppContext);
   let [fontsLoaded] = useFonts({
     DMSans_400Regular,
@@ -31,6 +36,7 @@ export default function AppText({ children, style, ...otherProps }) {
   return (
     <Text
       style={[styles.text, { color: mode[appTheme].text }, style]}
+      numberOfLines={numberOfLines}
       {...otherProps}
     >
       {children}

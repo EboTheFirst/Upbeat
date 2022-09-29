@@ -27,6 +27,7 @@ export default function Login({ navigation }) {
 
   const submitHandler = async (formData) => {
     setLoading(true);
+    console.log("HERE");
     for (const key in formData) {
       formData[key] = formData[key].trim();
     }

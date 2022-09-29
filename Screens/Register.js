@@ -30,6 +30,7 @@ export default function Register({ navigation }) {
 
   const submitHandler = async (formData) => {
     setLoading(true);
+    console.log("HERE");
     for (const key in formData) {
       formData[key] = formData[key].trim();
     }
@@ -44,10 +45,6 @@ export default function Register({ navigation }) {
     }
     setLoading(false);
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <View
@@ -129,6 +126,7 @@ export default function Register({ navigation }) {
         </Formik>
       </View>
       <StatusBar style="auto" />
+      {loading && <Loading />}
     </View>
   );
 }

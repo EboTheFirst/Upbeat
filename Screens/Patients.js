@@ -54,12 +54,12 @@ export default function Patients({ navigation }) {
   const validationSchema = Yup.object().shape({
     fullname: Yup.string().required().label("Full name"),
     age: Yup.number().min(0).required().label("Age"),
-    gender: Yup.string().required().label("Gender"),
     contact: Yup.number().required().label("Contact"),
     residence: Yup.string().required().label("Residence"),
   });
 
   const submitHandler = async (formData) => {
+    console.log("PRESSSED");
     setLoading(true);
     for (const key in formData) {
       formData[key] = formData[key].trim();

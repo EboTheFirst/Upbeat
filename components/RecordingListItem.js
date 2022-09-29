@@ -9,6 +9,7 @@ import {
   Foundation,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import mongoDate from "../simplifications/mongoDate";
 
 export default function RecordingListItem({ recordingsInfo, onPress, key }) {
   const { appTheme } = useContext(AppContext);
@@ -26,7 +27,7 @@ export default function RecordingListItem({ recordingsInfo, onPress, key }) {
         {/* ICON */}
         <MaterialCommunityIcons
           name="waveform"
-          size={35}
+          size={30}
           color={mode[appTheme].text}
         />
 
@@ -38,12 +39,20 @@ export default function RecordingListItem({ recordingsInfo, onPress, key }) {
                 {
                   fontFamily: "DMSans_500Medium",
                   fontSize: 12,
-                  marginBottom: 5,
                 },
               ]}
             >
-              LABEL{" \n"}
-              <AppText style={{ fontSize: 15 }}>
+              LABEL
+              {/* {"\n"} */}
+              {/* <View
+                style={{
+                  backgroundColor: mode[appTheme].theme1,
+                  width: 40,
+                  height: 1,
+                }}
+              /> */}
+              {"\n"}
+              <AppText numberOfLines={1} style={{ fontSize: 15 }}>
                 {recordingsInfo.label || "No Label"}
               </AppText>
             </AppText>
@@ -72,16 +81,8 @@ export default function RecordingListItem({ recordingsInfo, onPress, key }) {
 
         {/* DATE */}
         <View
-          style={{ justifyContent: "space-evenly", alignSelf: "flex-start" }}
+          style={{ justifyContent: "space-between", alignSelf: "flex-start" }}
         >
-          <AppText
-            style={[
-              styles.deviceListItemtext,
-              { marginBottom: 5, fontSize: 12 },
-            ]}
-          >
-            Received
-          </AppText>
           <AppText
             style={[
               styles.deviceListItemtext,
@@ -89,19 +90,19 @@ export default function RecordingListItem({ recordingsInfo, onPress, key }) {
                 marginBottom: 5,
                 fontFamily: "DMSans_700Bold",
                 textAlign: "right",
-                fontSize: 12,
+                fontSize: 11,
               },
             ]}
           >
-            June 26
+            {mongoDate.getDate(recordingsInfo.createdAt)}
           </AppText>
           <AppText
             style={[
               styles.deviceListItemtext,
-              { textAlign: "right", marginTop: 15 },
+              { textAlign: "right", fontSize: 12, marginTop: 15 },
             ]}
           >
-            3:45 PM
+            {mongoDate.getTime(recordingsInfo.createdAt)}
           </AppText>
         </View>
       </View>

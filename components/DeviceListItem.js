@@ -7,6 +7,7 @@ import { useContext } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AppButton from "./AppButton";
 import { THEMES } from "../constants/themes";
+import mongoDate from "../simplifications/mongoDate";
 
 export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
   const { appTheme } = useContext(AppContext);
@@ -17,7 +18,7 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
         style={[
           styles.card,
           { backgroundColor: mode[appTheme].backgroundDarker },
-          { padding: 20, paddingBottom: 10, marginTop: 3 },
+          { padding: 20, paddingBottom: 10, marginTop: 3, borderRadius: 15 },
         ]}
       >
         <View style={[styles.row]}>
@@ -86,14 +87,14 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
           <View
             style={{ justifyContent: "space-evenly", alignSelf: "flex-start" }}
           >
-            <AppText
+            {/* <AppText
               style={[
                 styles.deviceListItemtext,
-                { marginBottom: 5, fontSize: 12 },
+                { marginBottom: 5, fontSize: 11 },
               ]}
             >
               Last used
-            </AppText>
+            </AppText> */}
             <AppText
               style={[
                 styles.deviceListItemtext,
@@ -101,19 +102,19 @@ export default function DeviceListItem({ deviceInfo, onPress, alias, key }) {
                   marginBottom: 5,
                   fontFamily: "DMSans_700Bold",
                   textAlign: "right",
-                  fontSize: 12,
+                  fontSize: 11,
                 },
               ]}
             >
-              June 26
+              {mongoDate.getDate(deviceInfo.device.updatedAt)}
             </AppText>
             <AppText
               style={[
                 styles.deviceListItemtext,
-                { textAlign: "right", marginTop: 15 },
+                { textAlign: "right", marginTop: 15, fontSize: 12 },
               ]}
             >
-              3:45 PM
+              {mongoDate.getTime(deviceInfo.device.updatedAt)}
             </AppText>
           </View>
         </View>

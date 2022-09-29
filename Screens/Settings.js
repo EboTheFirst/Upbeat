@@ -147,7 +147,7 @@ export default function Settings({ navigation }) {
         </View>
         {/* THEME BOX END */}
 
-        <View style={[styles.card, { padding: 15, marginTop: 20, width: 320 }]}>
+        {/* <View style={[styles.card, { padding: 15, marginTop: 20, width: 320 }]}>
           <AppText
             style={[
               styles.textMedium,
@@ -156,7 +156,7 @@ export default function Settings({ navigation }) {
           >
             {"NOTIFICATIONS"}
           </AppText>
-        </View>
+        </View> */}
         <AppButton
           onPress={() => {
             userStorage.removeUser();

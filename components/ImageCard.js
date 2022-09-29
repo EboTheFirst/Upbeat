@@ -18,7 +18,7 @@ export default function ImageCard({ source, onPress, headerText }) {
       <ImageBackground
         source={source}
         resizeMode="cover"
-        imageStyle={{ borderRadius: 10 }}
+        imageStyle={{ borderRadius: 15 }}
       >
         <LinearGradient
           colors={[
@@ -27,7 +27,7 @@ export default function ImageCard({ source, onPress, headerText }) {
             "transparent",
             "transparent",
           ]}
-          style={[{ borderRadius: 10, height: 180, width: 320, padding: 15 }]}
+          style={[{ borderRadius: 15, height: 180, width: 320, padding: 15 }]}
         >
           <AppText
             style={[

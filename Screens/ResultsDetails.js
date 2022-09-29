@@ -12,6 +12,7 @@ import AppTextInput from "../components/AppTextInput";
 import { THEMES } from "../constants/themes";
 import { LineChart, BarChart } from "react-native-chart-kit";
 import AppButton from "../components/AppButton";
+import mongoDate from "../simplifications/mongoDate";
 
 export default function ResultsDetails({ navigation, route }) {
   const { appTheme } = useContext(AppContext);
@@ -252,7 +253,12 @@ export default function ResultsDetails({ navigation, route }) {
               Certainty:{" "}
               {(route.params.recording.info.certainty * 100).toFixed(2)}%
             </AppText>
-            <AppText>Date Received:</AppText>
+            <AppText>
+              Received{"\n"}
+              {mongoDate.getDate(route.params.recording.createdAt)}
+              {"\t\t"}
+              {mongoDate.getTime(route.params.recording.createdAt)}
+            </AppText>
           </View>
         </View>
       </View>

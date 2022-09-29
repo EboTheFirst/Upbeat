@@ -12,7 +12,6 @@ import Login from "./Screens/Login";
 import Register from "./Screens/Register";
 import Devices from "./Screens/Devices";
 import { routes } from "./constants/routes";
-import Recordings from "./Screens/Recordings";
 import ResultsDetails from "./Screens/ResultsDetails";
 import Settings from "./Screens/Settings";
 import Patients from "./Screens/Patients";
@@ -100,7 +99,6 @@ export default function App() {
           <Stack.Screen name={routes.PATIENT_INFO} component={PatientInfo} />
           <Stack.Screen name={routes.DEVICES} component={Devices} />
           <Stack.Screen name={routes.UPLOAD} component={Upload} />
-          <Stack.Screen name={routes.RECORDINGS} component={Recordings} />
           <Stack.Screen
             name={routes.RECORDINGS_PATIENT}
             component={Recordings_Patient}

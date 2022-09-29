@@ -4,7 +4,7 @@
     "slug": "upbeat",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/my_splash.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/my_splash.png",
@@ -14,18 +14,21 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/my_splash.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.e.b.o.upbeat"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/my_splash.png"
     }
   }
 }

@@ -27,6 +27,7 @@ import * as patientsApi from "../api/patients.api";
 import Submit from "../components/Submit";
 import Loading from "../components/Loading";
 import AppTextInput from "../components/AppTextInput";
+import mongoDate from "../simplifications/mongoDate";
 
 export default function PatientInfo({ navigation, route }) {
   const { appTheme, user } = useContext(AppContext);
@@ -88,7 +89,6 @@ export default function PatientInfo({ navigation, route }) {
     setLoading(true);
     const { status, data } = await getByPatient(route.params.patient._id);
     if (status == 200) {
-      console.log(data);
       setRecordings(data);
       setRecNum(data.length);
       let murNum = 0;
@@ -212,21 +212,32 @@ export default function PatientInfo({ navigation, route }) {
                   },
                 ]}
               >
-                {"Last Examination: May 16 2022"}
+                Last Examination:{" "}
+                {recordings?.length
+                  ? mongoDate.getDate(
+                      recordings[recordings.length - 1].createdAt
+                    )
+                  : "--- --- -- ----"}
               </AppText>
             </View>
           </LinearGradient>
         </TouchableOpacity>
         {/* AUDIO BOX END */}
-        <TouchableOpacity onPress={() => setModalHidden(false)}>
-          <LinearGradient
-            colors={[mode[appTheme].theme1, "rgba(0,0,0,0.5)"]}
+        <TouchableOpacity
+          style={{ width: "90%" }}
+          onPress={() => setModalHidden(false)}
+        >
+          <View
             style={[
               {
                 marginTop: 10,
                 borderRadius: 5,
                 padding: 10,
+                backgroundColor: mode[appTheme].theme1,
+                width: "100%",
+                borderRadius: 10,
                 justifyContent: "center",
+                alignItems: "center",
               },
             ]}
           >
@@ -239,7 +250,7 @@ export default function PatientInfo({ navigation, route }) {
             >
               GET PATIENT RECORDING
             </AppText>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
         <View
           style={{

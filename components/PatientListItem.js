@@ -5,6 +5,7 @@ import { mode } from "../constants/colors";
 import AppContext from "../contexts/appContext";
 import { useContext } from "react";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import mongoDate from "../simplifications/mongoDate";
 
 export default function PatientListItem({ patientInfo, onPress, alias, key }) {
   const { appTheme } = useContext(AppContext);
@@ -16,7 +17,7 @@ export default function PatientListItem({ patientInfo, onPress, alias, key }) {
           styles.card,
           styles.row,
           { backgroundColor: mode[appTheme].backgroundDarker },
-          { padding: 20, marginTop: 3 },
+          { padding: 20, marginTop: 3, borderRadius: 15 },
         ]}
       >
         {/* ICON */}
@@ -25,11 +26,13 @@ export default function PatientListItem({ patientInfo, onPress, alias, key }) {
         <View style={{ flex: 1, paddingLeft: 10, paddingRight: 20 }}>
           <AppText
             style={[
-              { fontSize: 12, fontFamily: "DMSans_500Medium", marginBottom: 5 },
+              { fontSize: 11, fontFamily: "DMSans_500Medium", marginBottom: 5 },
             ]}
           >
             NAME{"\n"}
-            <AppText style={{ fontSize: 15 }}>{patientInfo.fullname}</AppText>
+            <AppText numberOfLines={1} style={{ fontSize: 15 }}>
+              {patientInfo.fullname}
+            </AppText>
           </AppText>
         </View>
 
@@ -40,31 +43,23 @@ export default function PatientListItem({ patientInfo, onPress, alias, key }) {
           <AppText
             style={[
               styles.deviceListItemtext,
-              { marginBottom: 5, fontSize: 12 },
-            ]}
-          >
-            Last used
-          </AppText>
-          <AppText
-            style={[
-              styles.deviceListItemtext,
               {
                 marginBottom: 5,
                 fontFamily: "DMSans_700Bold",
                 textAlign: "right",
-                fontSize: 12,
+                fontSize: 11,
               },
             ]}
           >
-            June 26
+            {mongoDate.getDate(patientInfo.updatedAt)}
           </AppText>
           <AppText
             style={[
               styles.deviceListItemtext,
-              { textAlign: "right", marginTop: 15 },
+              { textAlign: "right", fontSize: 12 },
             ]}
           >
-            3:45 PM
+            {mongoDate.getTime(patientInfo.updatedAt)}
           </AppText>
         </View>
       </View>
